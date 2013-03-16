@@ -65,6 +65,7 @@ class GitChart:
                         'commits_version'   : self._chart_commits_version,
                         'files_type'        : self._chart_files_type,
                         }
+        # define a Pygal style with transparent background and custom colors
         self.style = pygal.style.Style(
             background='transparent',
             plot_background='transparent',
@@ -77,17 +78,20 @@ class GitChart:
         self.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
     def _git_command(self, repository, command, command2=None):
-        """Execute a git command and return lines as a list. If command2 is given, the two commands are piped."""
+        """Execute one or two piped git commands return lines as a list."""
         if command2:
+            # pipe the two commands and return output
             p1 = subprocess.Popen(command, stdout=subprocess.PIPE, cwd=repository)
             p2 = subprocess.Popen(command2, stdin=p1.stdout, stdout=subprocess.PIPE)
             p1.stdout.close()
             return p2.communicate()[0].decode('utf-8').strip().split('\n')
         else:
+            # execute a single git command and return output
             p = subprocess.Popen(command, stdout=subprocess.PIPE, cwd=repository)
             return p.communicate()[0].decode('utf-8').strip().split('\n')
 
     def _generate_bar_chart(self, title, data, output, sorted_keys=None, x_labels=None, x_label_rotation=0):
+        """Generate a bar chart."""
         bar_chart = pygal.Bar(style=self.style, show_legend=False, x_label_rotation=x_label_rotation, label_font_size=12)
         bar_chart.title = title
         if not sorted_keys:
@@ -97,6 +101,7 @@ class GitChart:
         bar_chart.render_to_file(output)
 
     def _chart_authors(self, title, repository, output, in_data=None, limit=20):
+        """Generate pie chart with git authors."""
         # format of lines in stdout:   278  John Doe
         stdout = self._git_command(repository, ['git', 'log', '--pretty=short'], ['git', 'shortlog', '-sn'])
         pie_chart = pygal.Pie(style=self.style, truncate_legend=100, value_font_size=12)
@@ -104,8 +109,8 @@ class GitChart:
         count = 0
         count_others = 0
         sum_others = 0
-        for committer in stdout:
-            (number, name) = committer.strip().split('\t', 1)
+        for author in stdout:
+            (number, name) = author.strip().split('\t', 1)
             count += 1
             if limit <= 0 or count <= limit:
                 pie_chart.add('%s (%s)' % (name, number), int(number))
@@ -118,12 +123,14 @@ class GitChart:
         return True
 
     def _chart_commits_hour(self, title, repository, output, in_data=None):
+        """Generate bar chart with commits by hour of day."""
         # format of lines in stdout: 2013-03-15 18:27:55 +0100
         stdout = self._git_command(repository, ['git', 'log', '--date=iso', '--pretty=format:%ad'])
         commits = {}
         for line in stdout:
             hour = line.split()[1].split(':')[0]
             commits[hour] = commits.get(hour, 0) + 1
+        # ensure each hour of day has a value (set 0 for hours without commits)
         for i in range(0, 24):
             hour = '%02d' % i
             if not hour in commits:
@@ -132,6 +139,7 @@ class GitChart:
         return True
 
     def _chart_commits_hour_week(self, title, repository, output, in_data=None):
+        """Generate dot chart with commits by hour of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
         stdout = self._git_command(repository, ['git', 'log', '--date=rfc', '--pretty=format:%ad'])
         commits = {}
@@ -146,6 +154,7 @@ class GitChart:
         dot_chart.title = title or 'Commits by hour of week'
         dot_chart.x_labels = ['%02d' % hour for hour in range(0, 24)]
         for day in sorted(commits, key=self.days.index):
+            # ensure each hour of day has a value (set 0 for hours without commits)
             for i in range(0, 24):
                 hour = '%02d' % i
                 if not hour in commits[day]:
@@ -155,6 +164,7 @@ class GitChart:
         return True
 
     def _chart_commits_day(self, title, repository, output, in_data=None):
+        """Generate bar chart with commits by day of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
         stdout = self._git_command(repository, ['git', 'log', '--date=rfc', '--pretty=format:%ad'])
         commits = {}
@@ -165,6 +175,7 @@ class GitChart:
         return True
 
     def _chart_commits_month(self, title, repository, output, in_data=None):
+        """Generate bar chart with commits by month of year."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command(repository, ['git', 'log', '--date=short', '--pretty=format:%ad'])
         commits = {}
@@ -179,6 +190,7 @@ class GitChart:
         return True
 
     def _chart_commits_year(self, title, repository, output, in_data=None):
+        """Generate bar chart with commits by year."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command(repository, ['git', 'log', '--date=short', '--pretty=format:%ad'])
         commits = {}
@@ -189,6 +201,7 @@ class GitChart:
         return True
 
     def _chart_commits_year_month(self, title, repository, output, in_data=None):
+        """Generate bar chart with commits by year/month."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command(repository, ['git', 'log', '--date=short', '--pretty=format:%ad'])
         commits = {}
@@ -196,6 +209,7 @@ class GitChart:
             month = '-'.join(line.split('-')[0:2])
             commits[month] = commits.get(month, 0) + 1
         x_labels = sorted(commits)
+        # if there are more than 20 commits, keep one x label on 10 (starting from the end)
         if len(commits) > 20:
             n = 0
             for i in range(len(x_labels) - 1, -1, -1):
@@ -206,6 +220,7 @@ class GitChart:
         return True
 
     def _chart_commits_version(self, title, repository, output, in_data=None):
+        """Generate bar chart with commits by version (tag)."""
         if not in_data:
             return False
         commits = {}
@@ -223,6 +238,7 @@ class GitChart:
         return True
 
     def _chart_files_type(self, title, repository, output, in_data=None, limit=20):
+        """Generate pie chart with files by extension."""
         # format of lines in stdout: path/to/file.c
         stdout = self._git_command(repository, ['git', 'ls-tree', '-r', '--name-only', 'HEAD'])
         extensions = {}
@@ -249,7 +265,7 @@ class GitChart:
         return True
 
     def generate(self, name, title, repository, output, in_data=None):
-        """Generate a chart, and return True if OK, false if error."""
+        """Generate a chart, and return True if OK, False if error."""
         if not name in self.charts:
             return False
         try:
