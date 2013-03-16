@@ -1,7 +1,6 @@
 ## Description
 
-`gitchart.py` is a Python script to build SVG charts from a Git repository,
-using [Pygal](http://pygal.org/).
+`gitchart.py` is a Python script to build SVG charts from a Git repository.
 
 It can build following charts:
 
@@ -10,8 +9,29 @@ It can build following charts:
 * commits by hour of week (dot char)
 * files by type (pie chart)
 
+## Install
+
 The script can run with either Python 2.x or 3.x (tested with Python 2.6, 2.7
 and 3.2).
+
+Only [Pygal](http://pygal.org/) is required. Install it with this command:
+
+    # pip install pygal
+
+## Examples
+
+Generate pie chart with authors:
+
+    $ python gitchart.py authors "Git authors" /path/to/gitrepo/ authors.svg
+
+Generate bar chart with commits by year:
+
+    $ python gitchart.py commits_year "Git commits by year" /path/to/gitrepo/ commits_year.svg
+
+Generate bar chart with commits by version (tag):
+
+    $ cd /path/to/gitrepo/
+    $ git tag | python /path/to/gitchart.py commits_version "Git commits by version" . /tmp/commits_version.svg
 
 ## Demo
 
