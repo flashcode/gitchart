@@ -43,13 +43,10 @@
 #   commits_version    | bar   | commits by tag/version    | git tag
 #   files_type         | pie   | files by type (extension) | -
 #
-# 2013-03-15, Sebastien Helleu <flashcode@flashtux.org>:
-#     version 0.1: initial release
-#
 
 import pygal, os, re, select, subprocess, sys, traceback
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 class GitChart:
     """Generate a git stat chart."""
@@ -291,10 +288,15 @@ if len(sys.argv) < 4:
     sys.exit(1)
 
 # read data on standard input
-in_data = None
-inr, outr, exceptr = select.select([sys.stdin], [], [], 0)
-if inr:
-    in_data = os.read(sys.stdin.fileno(), 1024 * 1024)  # read max 1MB
+in_data = ''
+while True:
+    inr, outr, exceptr = select.select([sys.stdin], [], [], 0)
+    if not inr:
+        break
+    data = os.read(sys.stdin.fileno(), 4096)
+    if not data:
+        break
+    in_data += data.decode('utf-8')
 
 if not chart.generate(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], in_data=in_data):
     print('Failed to generate chart: %s' % sys.argv)
