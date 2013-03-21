@@ -46,7 +46,7 @@
 
 import pygal, os, re, select, subprocess, sys, traceback
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 class GitChart:
     """Generate a git stat chart."""
@@ -202,9 +202,25 @@ class GitChart:
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command(repository, ['git', 'log', '--date=short', '--pretty=format:%ad'])
         commits = {}
+        min_date = 999999
+        max_date = 0;
         for line in stdout:
-            month = '-'.join(line.split('-')[0:2])
-            commits[month] = commits.get(month, 0) + 1
+            (year, month, day) = line.split('-')
+            date = (int(year) * 100) + int(month)
+            min_date = min(min_date, date)
+            max_date = max(max_date, date)
+            year_month = '%s-%s' % (year, month)
+            commits[year_month] = commits.get(year_month, 0) + 1
+        if min_date != 999999:
+            date = min_date
+            while date < max_date:
+                year_month = '%04d-%02d' % (date / 100, date % 100)
+                commits[year_month] = commits.get(year_month, 0)
+                if date % 100 == 12:
+                    # next year, for example: 201312 => 201401 (+89)
+                    date += 89
+                else:
+                    date += 1
         x_labels = sorted(commits)
         # if there are more than 20 commits, keep one x label on 10 (starting from the end)
         if len(commits) > 20:
