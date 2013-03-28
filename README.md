@@ -1,8 +1,8 @@
 ## Description
 
-`gitchart.py` is a Python script to build SVG charts from a Git repository.
+`gitchart.py` is a Python script to build charts from a Git repository.
 
-It can build following charts:
+It can build following charts, as SVG or PNG:
 
 * authors (pie chart)
 * commits by hour, day of week, month of year, year, year/month (bar charts)
