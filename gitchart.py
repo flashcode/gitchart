@@ -95,7 +95,7 @@ class GitChart:
             sorted_keys = sorted(data)
         bar_chart.x_labels = x_labels if x_labels else sorted_keys
         bar_chart.add('', [data[n] for n in sorted_keys])
-        bar_chart.render_to_file(output)
+        self._render(bar_chart, output)
 
     def _chart_authors(self, title, repository, output, in_data=None, limit=20):
         """Generate pie chart with git authors."""
@@ -116,7 +116,7 @@ class GitChart:
                 sum_others += int(number)
         if count_others:
             pie_chart.add('%d others (%d)' % (count_others, sum_others), sum_others)
-        pie_chart.render_to_file(output)
+        self._render(pie_chart, output)
         return True
 
     def _chart_commits_hour(self, title, repository, output, in_data=None):
@@ -157,7 +157,7 @@ class GitChart:
                 if not hour in commits[day]:
                     commits[day][hour] = 0
             dot_chart.add(day, commits[day])
-        dot_chart.render_to_file(output)
+        self._render(dot_chart, output)
         return True
 
     def _chart_commits_day(self, title, repository, output, in_data=None):
@@ -274,8 +274,14 @@ class GitChart:
                 sum_others += extensions[ext]
         if count_others:
             pie_chart.add('%d others (%d)' % (count_others, sum_others), sum_others)
-        pie_chart.render_to_file(output)
+        self._render(pie_chart, output)
         return True
+
+    def _render(self, chart, output):
+        if output.endswith('.png'):
+            chart.render_to_png(output)
+        else:
+            chart.render_to_file(output)
 
     def generate(self, name, title, repository, output, in_data=None):
         """Generate a chart, and return True if OK, False if error."""
