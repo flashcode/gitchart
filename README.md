@@ -6,7 +6,7 @@ It can build following charts, as SVG or PNG:
 
 * authors (pie chart)
 * commits by hour, day of week, month of year, year, year/month (bar charts)
-* commits by hour of week (dot char)
+* commits by hour of week (dot chart)
 * files by type (pie chart)
 
 ## Install
