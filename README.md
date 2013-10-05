@@ -35,4 +35,4 @@ Generate bar chart with commits by version (tag):
 
 ## Demo
 
-`gitchart.py` is used to build statistics for WeeChat: http://weechat.org/stats/
+`gitchart.py` is used to build statistics for WeeChat: http://weechat.org/dev/stats/
