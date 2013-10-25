@@ -11,12 +11,12 @@ It can build following charts, as SVG or PNG:
 
 ## Install
 
-The script can run with either Python 2.x or 3.x (tested with Python 2.6, 2.7
-and 3.2).
-
-Only [Pygal](http://pygal.org/) is required. Install it with this command:
+The script requires Python >= 2.7 and [Pygal](http://pygal.org/), which can be
+installed with this command:
 
     # pip install pygal
+
+Note: cairosvg is required to generate PNG files.
 
 ## Examples
 

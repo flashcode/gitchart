@@ -20,16 +20,6 @@
 # Generate statistic charts for a git repository using pygal
 # (http://pygal.org).
 #
-# Syntax:
-#      gitchart.py <chart> <title> <repository> <output>
-#    or:
-#      command | gitchart.py <chart> <title> <repository> <output>
-#
-#      chart       name of chart (see below)
-#      title       title of chart
-#      repository  directory with git repository
-#      output      output path/filename (SVG file)
-#
 # Charts supported:
 #
 #                      |       |                           | format of data
@@ -46,6 +36,7 @@
 #   files_type         | pie   | files by type (extension) | -
 #
 
+import argparse
 import os
 import pygal
 import re
@@ -54,7 +45,9 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '0.3'
+NAME = 'gitchart.py'
+VERSION = '0.4'
+AUTHOR = 'Sebastien Helleu <flashcode@flashtux.org>'
 
 
 class GitChart:
@@ -292,31 +285,42 @@ class GitChart:
         else:
             chart.render_to_file(output)
 
-    def generate(self, name, title, repository, output, in_data=None):
+    def generate(self, chart, title, repository, output, in_data=None):
         """Generate a chart, and return True if OK, False if error."""
-        if not name in self.charts:
+        if chart not in self.charts:
             return False
         try:
-            return self.charts[name](title, repository, output, in_data)
+            return self.charts[chart](title, repository, output, in_data)
         except:
             print ('Error:\n%s' % traceback.print_exc())
             return False
 
+
+# build the GitChart object
 chart = GitChart()
 
-if len(sys.argv) < 4:
-    print('')
-    print('gitchart.py %s (C) 2013 Sebastien Helleu <flashcode@flashtux.org>' % VERSION)
-    print('')
-    print('Syntax:')
-    print('  %s <chart> <title> <repository> <output>' % sys.argv[0])
-    print('')
-    print('    chart       name of chart, one of: %s' % ', '.join(chart.charts))
-    print('    title       title of chart')
-    print('    repository  directory with git repository')
-    print('    output      output path/filename (file.svg)')
-    print('')
+# parse command line arguments
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 description='''
+%s %s (C) 2013 %s
+
+Generate statistic charts for a git repository.
+''' % (NAME, VERSION, AUTHOR),
+                                 epilog='''
+Return value:
+  0: chart successfully generated
+  1: error
+''')
+parser.add_argument('chart', metavar='chart', choices=chart.charts.keys(),
+                    help='name of chart, one of: %s' % ', '.join(chart.charts))
+parser.add_argument('title', help='title of chart')
+parser.add_argument('repository', help='directory with git repository')
+parser.add_argument('output', help='output file (/path/to/file.svg or /path/to/file.png)')
+parser.add_argument('-v', '--version', action='version', version=VERSION)
+if len(sys.argv) == 1:
+    parser.print_help()
     sys.exit(1)
+args = parser.parse_args(sys.argv[1:])
 
 # read data on standard input
 in_data = ''
@@ -329,5 +333,10 @@ while True:
         break
     in_data += data.decode('utf-8')
 
-if not chart.generate(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], in_data=in_data):
-    print('Failed to generate chart: %s' % sys.argv)
+# generate chart
+if chart.generate(args.chart, args.title, args.repository, args.output, in_data=in_data):
+    sys.exit(0)
+
+# error
+print('Failed to generate chart: %s' % args)
+sys.exit(1)
