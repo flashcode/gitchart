@@ -17,7 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Generate statistic charts for a git repository using pygal (http://pygal.org).
+# Generate statistic charts for a git repository using pygal
+# (http://pygal.org).
 #
 # Syntax:
 #      gitchart.py <chart> <title> <repository> <output>
@@ -31,8 +32,9 @@
 #
 # Charts supported:
 #
-#   name               | chart | description               | format of data expected (stdin)
-#   -------------------+-------+---------------------------+--------------------------------
+#                      |       |                           | format of data
+#   name               | chart | description               | expected (stdin)
+#   -------------------+-------+---------------------------+-----------------
 #   authors            | pie   | git authors               | -
 #   commits_hour       | bar   | commits by hour of day    | -
 #   commits_hour_week  | dot   | commits by hour of week   | -
@@ -44,24 +46,31 @@
 #   files_type         | pie   | files by type (extension) | -
 #
 
-import pygal, os, re, select, subprocess, sys, traceback
+import os
+import pygal
+import re
+import select
+import subprocess
+import sys
+import traceback
 
 VERSION = '0.3'
+
 
 class GitChart:
     """Generate a git stat chart."""
 
     def __init__(self):
-        self.charts = { 'authors'           : self._chart_authors,
-                        'commits_hour'      : self._chart_commits_hour,
-                        'commits_hour_week' : self._chart_commits_hour_week,
-                        'commits_day'       : self._chart_commits_day,
-                        'commits_month'     : self._chart_commits_month,
-                        'commits_year'      : self._chart_commits_year,
-                        'commits_year_month': self._chart_commits_year_month,
-                        'commits_version'   : self._chart_commits_version,
-                        'files_type'        : self._chart_files_type,
-                        }
+        self.charts = {'authors': self._chart_authors,
+                       'commits_hour': self._chart_commits_hour,
+                       'commits_hour_week': self._chart_commits_hour_week,
+                       'commits_day': self._chart_commits_day,
+                       'commits_month': self._chart_commits_month,
+                       'commits_year': self._chart_commits_year,
+                       'commits_year_month': self._chart_commits_year_month,
+                       'commits_version': self._chart_commits_version,
+                       'files_type': self._chart_files_type,
+                       }
         # define a Pygal style with transparent background and custom colors
         self.style = pygal.style.Style(
             background='transparent',
@@ -203,7 +212,7 @@ class GitChart:
         stdout = self._git_command(repository, ['git', 'log', '--date=short', '--pretty=format:%ad'])
         commits = {}
         min_date = 999999
-        max_date = 0;
+        max_date = 0
         for line in stdout:
             (year, month, day) = line.split('-')
             date = (int(year) * 100) + int(month)
