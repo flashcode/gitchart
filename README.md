@@ -18,20 +18,26 @@ installed with this command:
 
 Note: cairosvg is required to generate PNG files.
 
+## Usage
+
+See output of command:
+
+    $ python gitchart.py -h
+
 ## Examples
 
 Generate pie chart with authors:
 
-    $ python gitchart.py authors "Git authors" /path/to/gitrepo/ authors.svg
+    $ python gitchart.py -t "Git authors on project X" -r /path/to/gitrepo/ authors authors.svg
 
 Generate bar chart with commits by year:
 
-    $ python gitchart.py commits_year "Git commits by year" /path/to/gitrepo/ commits_year.svg
+    $ python gitchart.py -r /path/to/gitrepo/ commits_year commits_year.svg
 
 Generate bar chart with commits by version (tag):
 
     $ cd /path/to/gitrepo/
-    $ git tag | python /path/to/gitchart.py commits_version "Git commits by version" . /tmp/commits_version.svg
+    $ git tag | python /path/to/gitchart.py commits_version /tmp/commits_version.svg
 
 ## Demo
 
