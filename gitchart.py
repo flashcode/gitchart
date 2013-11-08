@@ -47,7 +47,7 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '0.5'
+VERSION = '0.6'
 
 
 class GitChart:
@@ -324,7 +324,8 @@ class GitChart:
             return False
 
 
-if __name__ == "__main__":
+def main():
+    """Main function, entry point."""
     # parse command line arguments
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -370,3 +371,7 @@ if __name__ == "__main__":
     # error
     print('ERROR: failed to generate chart:', vars(args))
     sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
