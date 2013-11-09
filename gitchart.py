@@ -47,7 +47,7 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '0.6'
+VERSION = '0.7'
 
 
 class GitChart:
@@ -83,7 +83,6 @@ class GitChart:
                  max_entries=20, in_data=None):
         self.chart_name = chart_name
         self.title = title if title is not None else self.charts[chart_name]
-        self.title = None
         self.repository = repository
         self.output = output
         self.max_entries = max_entries
