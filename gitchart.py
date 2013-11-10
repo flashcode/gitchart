@@ -25,9 +25,10 @@
 #   name               | chart | description               | expected (stdin)
 #   -------------------+-------+---------------------------+-----------------
 #   authors            | pie   | git authors               | -
-#   commits_hour       | bar   | commits by hour of day    | -
+#   commits_hour_day   | bar   | commits by hour of day    | -
 #   commits_hour_week  | dot   | commits by hour of week   | -
-#   commits_day        | bar   | commits by day of week    | -
+#   commits_day        | bar   | commits by day            | -
+#   commits_day_week   | bar   | commits by day of week    | -
 #   commits_month      | bar   | commits by month of year  | -
 #   commits_year       | bar   | commits by year           | -
 #   commits_year_month | bar   | commits by year/month     | -
@@ -47,7 +48,7 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '0.7'
+VERSION = '0.8'
 
 
 class GitChart:
@@ -55,9 +56,10 @@ class GitChart:
 
     charts = {
         'authors': 'Authors',
-        'commits_hour': 'Commits by hour of day',
+        'commits_hour_day': 'Commits by hour of day',
         'commits_hour_week': 'Commits by hour of week',
-        'commits_day': 'Commits by day of week',
+        'commits_day': 'Commits by day',
+        'commits_day_week': 'Commits by day of week',
         'commits_month': 'Commits by month of year',
         'commits_year': 'Commits by year',
         'commits_year_month': 'Commits by year/month',
@@ -80,12 +82,13 @@ class GitChart:
                                       '#ff00cc', '#899ca1', '#bf4646'))
 
     def __init__(self, chart_name, title=None, repository='.', output=None,
-                 max_entries=20, in_data=None):
+                 max_diff=20, sort_max=0, in_data=None):
         self.chart_name = chart_name
         self.title = title if title is not None else self.charts[chart_name]
         self.repository = repository
         self.output = output
-        self.max_entries = max_entries
+        self.max_diff = max_diff
+        self.sort_max = sort_max
         self.in_data = in_data
 
     def _git_command(self, command1, command2=None):
@@ -107,16 +110,35 @@ class GitChart:
                                  cwd=self.repository)
             return p.communicate()[0].decode('utf-8').strip().split('\n')
 
-    def _generate_bar_chart(self, data, sorted_keys=None, x_labels=None,
-                            x_label_rotation=0):
+    def _generate_bar_chart(self, data, sorted_keys=None, max_keys=0,
+                            max_x_labels=0, x_label_rotation=0):
         """Generate a bar chart."""
         bar_chart = pygal.Bar(style=self.style, show_legend=False,
                               x_label_rotation=x_label_rotation,
                               label_font_size=12)
         bar_chart.title = self.title
-        if not sorted_keys:
+        # sort and keep max entries (if asked)
+        if self.sort_max != 0:
+            sorted_keys = sorted(data, key=data.get, reverse=self.sort_max < 0)
+            keep = -1 * self.sort_max
+            if keep > 0:
+                sorted_keys = sorted_keys[:keep]
+            else:
+                sorted_keys = sorted_keys[keep:]
+        elif not sorted_keys:
             sorted_keys = sorted(data)
-        bar_chart.x_labels = x_labels if x_labels else sorted_keys
+        if max_keys != 0:
+            sorted_keys = sorted_keys[-1 * max_keys:]
+        bar_chart.x_labels = sorted_keys[:]
+        if max_x_labels > 0 and len(bar_chart.x_labels) > max_x_labels:
+            # reduce number of x labels for readibility: keep only one label
+            # on N, starting from the end
+            n = max(2, (len(bar_chart.x_labels) // max_x_labels) * 2)
+            count = 0
+            for i in range(len(bar_chart.x_labels) - 1, -1, -1):
+                if count % n != 0:
+                    bar_chart.x_labels[i] = ''
+                count += 1
         bar_chart.add('', [data[n] for n in sorted_keys])
         self._render(bar_chart)
 
@@ -134,7 +156,7 @@ class GitChart:
         for author in stdout:
             (number, name) = author.strip().split('\t', 1)
             count += 1
-            if self.max_entries <= 0 or count <= self.max_entries:
+            if self.max_diff <= 0 or count <= self.max_diff:
                 pie_chart.add(name + ' ({0})'.format(number), int(number))
             else:
                 count_others += 1
@@ -145,7 +167,7 @@ class GitChart:
         self._render(pie_chart)
         return True
 
-    def _chart_commits_hour(self):
+    def _chart_commits_hour_day(self):
         """Generate bar chart with commits by hour of day."""
         # format of lines in stdout: 2013-03-15 18:27:55 +0100
         stdout = self._git_command(['git', 'log', '--date=iso',
@@ -175,6 +197,18 @@ class GitChart:
         return True
 
     def _chart_commits_day(self):
+        """Generate bar chart with commits by day."""
+        # format of lines in stdout: 2013-03-15
+        stdout = self._git_command(['git', 'log', '--date=short',
+                                    '--pretty=format:%ad'])
+        commits = {}
+        for line in stdout:
+            commits[line] = commits.get(line, 0) + 1
+        self._generate_bar_chart(commits, max_keys=self.max_diff,
+                                 x_label_rotation=45)
+        return True
+
+    def _chart_commits_day_week(self):
         """Generate bar chart with commits by day of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
         stdout = self._git_command(['git', 'log', '--date=rfc',
@@ -238,17 +272,7 @@ class GitChart:
                     date += 89
                 else:
                     date += 1
-        x_labels = sorted(commits)
-        # if there are more than 20 commits, keep one x label on 10
-        # (starting from the end)
-        if len(commits) > 20:
-            n = 0
-            for i in range(len(x_labels) - 1, -1, -1):
-                if n % 10 != 0:
-                    x_labels[i] = ''
-                n += 1
-        self._generate_bar_chart(commits, x_labels=x_labels,
-                                 x_label_rotation=45)
+        self._generate_bar_chart(commits, max_x_labels=30, x_label_rotation=45)
         return True
 
     def _chart_commits_version(self):
@@ -290,7 +314,7 @@ class GitChart:
         sum_others = 0
         for ext in sorted(extensions, key=extensions.get, reverse=True):
             count += 1
-            if self.max_entries <= 0 or count <= self.max_entries:
+            if self.max_diff <= 0 or count <= self.max_diff:
                 pie_chart.add(ext + ' ({0})'.format(extensions[ext]),
                               extensions[ext])
             else:
@@ -334,10 +358,17 @@ def main():
                         help='override the default chart title')
     parser.add_argument('-r', '--repo', default='.',
                         help='directory with git repository')
-    parser.add_argument('-m', '--max', type=int, default=20,
+    parser.add_argument('-d', '--max-diff', type=int, default=20,
                         help='max different entries in chart: after this '
-                        'number, an entry is counted in "others" (only for '
-                        'charts "authors" and "files_type"), 0=unlimited')
+                        'number, an entry is counted in "others" (for charts '
+                        'authors and files_type); max number of days (for '
+                        'chart commits_day); 0=unlimited')
+    parser.add_argument('-s', '--sort-max', type=int, default=0,
+                        help='keep max entries in chart and sort them by '
+                        'value; a negative number will reverse the sort '
+                        '(only for charts: commits_hour_day, commits_day, '
+                        'commits_day_week, commits_month, commits_year, '
+                        'commits_year_month, commits_version); 0=no sort/max')
     parser.add_argument('chart', metavar='chart',
                         choices=sorted(GitChart.charts),
                         help='name of chart, one of: ' +
@@ -362,8 +393,8 @@ def main():
         in_data += data.decode('utf-8')
 
     # generate chart
-    chart = GitChart(args.chart, args.title, args.repo, args.output, args.max,
-                     in_data)
+    chart = GitChart(args.chart, args.title, args.repo, args.output,
+                     args.max_diff, args.sort_max, in_data)
     if chart.generate():
         sys.exit(0)
 
