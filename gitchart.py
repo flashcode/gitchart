@@ -48,7 +48,7 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '0.8'
+VERSION = '0.9'
 
 
 class GitChart:
@@ -103,12 +103,12 @@ class GitChart:
             p2 = subprocess.Popen(command2, stdin=p1.stdout,
                                   stdout=subprocess.PIPE)
             p1.stdout.close()
-            return p2.communicate()[0].decode('utf-8').strip().split('\n')
+            return p2.communicate()[0].decode('utf-8', errors='ignore').strip().split('\n')
         else:
             # execute a single git cmd and return output
             p = subprocess.Popen(command1, stdout=subprocess.PIPE,
                                  cwd=self.repository)
-            return p.communicate()[0].decode('utf-8').strip().split('\n')
+            return p.communicate()[0].decode('utf-8', errors='ignore').strip().split('\n')
 
     def _generate_bar_chart(self, data, sorted_keys=None, max_keys=0,
                             max_x_labels=0, x_label_rotation=0):
