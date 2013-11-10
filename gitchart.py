@@ -48,7 +48,7 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '0.9'
+VERSION = '1.0'
 
 
 class GitChart:
@@ -154,7 +154,7 @@ class GitChart:
         count_others = 0
         sum_others = 0
         for author in stdout:
-            (number, name) = author.strip().split('\t', 1)
+            (number, name) = author.strip(' ').split('\t', 1)
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
                 pie_chart.add(name + ' ({0})'.format(number), int(number))
