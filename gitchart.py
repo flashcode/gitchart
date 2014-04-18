@@ -48,7 +48,7 @@ import subprocess
 import sys
 import traceback
 
-VERSION = '1.0'
+VERSION = '1.1'
 
 
 class GitChart:
@@ -103,12 +103,14 @@ class GitChart:
             p2 = subprocess.Popen(command2, stdin=p1.stdout,
                                   stdout=subprocess.PIPE)
             p1.stdout.close()
-            return p2.communicate()[0].decode('utf-8', errors='ignore').strip().split('\n')
+            return p2.communicate()[0].decode('utf-8', errors='ignore') \
+                .strip().split('\n')
         else:
             # execute a single git cmd and return output
             p = subprocess.Popen(command1, stdout=subprocess.PIPE,
                                  cwd=self.repository)
-            return p.communicate()[0].decode('utf-8', errors='ignore').strip().split('\n')
+            return p.communicate()[0].decode('utf-8', errors='ignore') \
+                .strip().split('\n')
 
     def _generate_bar_chart(self, data, sorted_keys=None, max_keys=0,
                             max_x_labels=0, x_label_rotation=0):
@@ -139,7 +141,7 @@ class GitChart:
                 if count % n != 0:
                     bar_chart.x_labels[i] = ''
                 count += 1
-        bar_chart.add('', [data[n] for n in sorted_keys])
+        bar_chart.add('', [data[k] for k in sorted_keys])
         self._render(bar_chart)
 
     def _chart_authors(self):
@@ -190,7 +192,7 @@ class GitChart:
             commits[wday[:-1]][hour.split(':')[0]] += 1
         dot_chart = pygal.Dot(style=self.style)
         dot_chart.title = self.title
-        dot_chart.x_labels = ['{0:02d}'.format(hour) for hour in range(0, 24)]
+        dot_chart.x_labels = ['{0:02d}'.format(hh) for hh in range(0, 24)]
         for day in self.weekdays:
             dot_chart.add(day, commits[day])
         self._render(dot_chart)
