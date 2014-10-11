@@ -16,42 +16,44 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#
-# Generate statistic charts for a git repository using pygal
-# (http://pygal.org).
-#
-# Charts supported:
-#                      |       |                           | format of data
-#   name               | chart | description               | expected (stdin)
-#   -------------------+-------+---------------------------+-----------------
-#   authors            | pie   | git authors               | -
-#   commits_hour_day   | bar   | commits by hour of day    | -
-#   commits_hour_week  | dot   | commits by hour of week   | -
-#   commits_day        | bar   | commits by day            | -
-#   commits_day_week   | bar   | commits by day of week    | -
-#   commits_month      | bar   | commits by month of year  | -
-#   commits_year       | bar   | commits by year           | -
-#   commits_year_month | bar   | commits by year/month     | -
-#   commits_version    | bar   | commits by tag/version    | git tag
-#   files_type         | pie   | files by type (extension) | -
-#
+"""
+Generate statistic charts for a git repository using pygal
+(http://pygal.org).
+
+Charts supported:
+                      |       |                           | format of data
+   name               | chart | description               | expected (stdin)
+   -------------------+-------+---------------------------+-----------------
+   authors            | pie   | git authors               | -
+   commits_hour_day   | bar   | commits by hour of day    | -
+   commits_hour_week  | dot   | commits by hour of week   | -
+   commits_day        | bar   | commits by day            | -
+   commits_day_week   | bar   | commits by day of week    | -
+   commits_month      | bar   | commits by month of year  | -
+   commits_year       | bar   | commits by year           | -
+   commits_year_month | bar   | commits by year/month     | -
+   commits_version    | bar   | commits by tag/version    | git tag
+   files_type         | pie   | files by type (extension) | -
+"""
 
 from __future__ import division, print_function
 
 import argparse
 import datetime
 import os
-import pygal
 import re
 import select
 import subprocess
 import sys
 import traceback
 
-VERSION = '1.1'
+from pygal import Bar, Dot, Pie
+from pygal.style import Style
+
+VERSION = '1.2-dev'
 
 
-class GitChart:
+class GitChart(object):
     """Generate a git stat chart."""
 
     charts = {
@@ -71,15 +73,15 @@ class GitChart:
     months = [datetime.date(2001, month, 1).strftime('%b')
               for month in range(1, 13)]
     # Pygal style with transparent background and custom colors
-    style = pygal.style.Style(background='transparent',
-                              plot_background='transparent',
-                              foreground='rgba(0, 0, 0, 0.9)',
-                              foreground_light='rgba(0, 0, 0, 0.6)',
-                              foreground_dark='rgba(0, 0, 0, 0.2)',
-                              opacity_hover='.4',
-                              colors=('#9999ff', '#8cedff', '#b6e354',
-                                      '#feed6c', '#ff9966', '#ff0000',
-                                      '#ff00cc', '#899ca1', '#bf4646'))
+    style = Style(background='transparent',
+                  plot_background='transparent',
+                  foreground='rgba(0, 0, 0, 0.9)',
+                  foreground_light='rgba(0, 0, 0, 0.6)',
+                  foreground_dark='rgba(0, 0, 0, 0.2)',
+                  opacity_hover='.4',
+                  colors=('#9999ff', '#8cedff', '#b6e354',
+                          '#feed6c', '#ff9966', '#ff0000',
+                          '#ff00cc', '#899ca1', '#bf4646'))
 
     def __init__(self, chart_name, title=None, repository='.', output=None,
                  max_diff=20, sort_max=0, in_data=None):
@@ -94,30 +96,31 @@ class GitChart:
     def _git_command(self, command1, command2=None):
         """
         Execute one or two piped git commands.
+
         Return the output lines as a list.
         """
         if command2:
             # pipe the two commands and return output
-            p1 = subprocess.Popen(command1, stdout=subprocess.PIPE,
-                                  cwd=self.repository)
-            p2 = subprocess.Popen(command2, stdin=p1.stdout,
-                                  stdout=subprocess.PIPE)
-            p1.stdout.close()
-            return p2.communicate()[0].decode('utf-8', errors='ignore') \
+            proc1 = subprocess.Popen(command1, stdout=subprocess.PIPE,
+                                     cwd=self.repository)
+            proc2 = subprocess.Popen(command2, stdin=proc1.stdout,
+                                     stdout=subprocess.PIPE)
+            proc1.stdout.close()
+            return proc2.communicate()[0].decode('utf-8', errors='ignore') \
                 .strip().split('\n')
         else:
             # execute a single git cmd and return output
-            p = subprocess.Popen(command1, stdout=subprocess.PIPE,
-                                 cwd=self.repository)
-            return p.communicate()[0].decode('utf-8', errors='ignore') \
+            proc = subprocess.Popen(command1, stdout=subprocess.PIPE,
+                                    cwd=self.repository)
+            return proc.communicate()[0].decode('utf-8', errors='ignore') \
                 .strip().split('\n')
 
     def _generate_bar_chart(self, data, sorted_keys=None, max_keys=0,
                             max_x_labels=0, x_label_rotation=0):
         """Generate a bar chart."""
-        bar_chart = pygal.Bar(style=self.style, show_legend=False,
-                              x_label_rotation=x_label_rotation,
-                              label_font_size=12)
+        bar_chart = Bar(style=self.style, show_legend=False,
+                        x_label_rotation=x_label_rotation,
+                        label_font_size=12)
         bar_chart.title = self.title
         # sort and keep max entries (if asked)
         if self.sort_max != 0:
@@ -135,10 +138,10 @@ class GitChart:
         if max_x_labels > 0 and len(bar_chart.x_labels) > max_x_labels:
             # reduce number of x labels for readibility: keep only one label
             # on N, starting from the end
-            n = max(2, (len(bar_chart.x_labels) // max_x_labels) * 2)
+            num = max(2, (len(bar_chart.x_labels) // max_x_labels) * 2)
             count = 0
             for i in range(len(bar_chart.x_labels) - 1, -1, -1):
-                if count % n != 0:
+                if count % num != 0:
                     bar_chart.x_labels[i] = ''
                 count += 1
         bar_chart.add('', [data[k] for k in sorted_keys])
@@ -149,8 +152,8 @@ class GitChart:
         # format of lines in stdout:   278  John Doe
         stdout = self._git_command(['git', 'log', '--pretty=short'],
                                    ['git', 'shortlog', '-sn'])
-        pie_chart = pygal.Pie(style=self.style, truncate_legend=100,
-                              value_font_size=12)
+        pie_chart = Pie(style=self.style, truncate_legend=100,
+                        value_font_size=12)
         pie_chart.title = self.title
         count = 0
         count_others = 0
@@ -190,7 +193,7 @@ class GitChart:
         for line in stdout:
             wday, _, _, _, hour, _ = line.split()
             commits[wday[:-1]][hour.split(':')[0]] += 1
-        dot_chart = pygal.Dot(style=self.style)
+        dot_chart = Dot(style=self.style)
         dot_chart.title = self.title
         dot_chart.x_labels = ['{0:02d}'.format(hh) for hh in range(0, 24)]
         for day in self.weekdays:
@@ -258,7 +261,7 @@ class GitChart:
         min_date = 999999
         max_date = 0
         for line in stdout:
-            (year, month, day) = line.split('-')
+            year, month = line.split('-')[0:2]
             date = (int(year) * 100) + int(month)
             min_date = min(min_date, date)
             max_date = max(max_date, date)
@@ -308,8 +311,8 @@ class GitChart:
             if not ext:
                 ext = '(no extension)'
             extensions[ext] = extensions.get(ext, 0) + 1
-        pie_chart = pygal.Pie(style=self.style, truncate_legend=100,
-                              value_font_size=12)
+        pie_chart = Pie(style=self.style, truncate_legend=100,
+                        value_font_size=12)
         pie_chart.title = self.title
         count = 0
         count_others = 0
@@ -329,6 +332,7 @@ class GitChart:
         return True
 
     def _render(self, chart):
+        """Render the chart in a file (or stdout)."""
         if self.output == '-':
             # display SVG on stdout
             print(chart.render())
@@ -342,9 +346,9 @@ class GitChart:
     def generate(self):
         """Generate a chart, and return True if OK, False if error."""
         try:
-            # call function to build chart (name of function is dynamic)
+            # call method to build chart (name of method is dynamic)
             return getattr(self, '_chart_' + self.chart_name)()
-        except:
+        except Exception:
             traceback.print_exc()
             return False
 
@@ -356,28 +360,38 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description='Generate statistic charts for a git repository.',
         epilog='Return value: 0 = success, 1 = error.')
-    parser.add_argument('-t', '--title',
-                        help='override the default chart title')
-    parser.add_argument('-r', '--repo', default='.',
-                        help='directory with git repository')
-    parser.add_argument('-d', '--max-diff', type=int, default=20,
-                        help='max different entries in chart: after this '
-                        'number, an entry is counted in "others" (for charts '
-                        'authors and files_type); max number of days (for '
-                        'chart commits_day); 0=unlimited')
-    parser.add_argument('-s', '--sort-max', type=int, default=0,
-                        help='keep max entries in chart and sort them by '
-                        'value; a negative number will reverse the sort '
-                        '(only for charts: commits_hour_day, commits_day, '
-                        'commits_day_week, commits_month, commits_year, '
-                        'commits_year_month, commits_version); 0=no sort/max')
-    parser.add_argument('chart', metavar='chart',
-                        choices=sorted(GitChart.charts),
-                        help='name of chart, one of: ' +
-                        ', '.join(sorted(GitChart.charts)))
-    parser.add_argument('output', help='output file (svg or png), special '
-                        'value "-" displays SVG content on standard output')
-    parser.add_argument('-v', '--version', action='version', version=VERSION)
+    parser.add_argument(
+        '-t', '--title',
+        help='override the default chart title')
+    parser.add_argument(
+        '-r', '--repo',
+        default='.',
+        help='directory with git repository')
+    parser.add_argument(
+        '-d', '--max-diff',
+        type=int, default=20,
+        help='max different entries in chart: after this number, an entry is '
+        'counted in "others" (for charts authors and files_type); max number '
+        'of days (for chart commits_day); 0=unlimited')
+    parser.add_argument(
+        '-s', '--sort-max',
+        type=int, default=0,
+        help='keep max entries in chart and sort them by value; a negative '
+        'number will reverse the sort (only for charts: commits_hour_day, '
+        'commits_day, commits_day_week, commits_month, commits_year, '
+        'commits_year_month, commits_version); 0=no sort/max')
+    parser.add_argument(
+        'chart',
+        metavar='chart', choices=sorted(GitChart.charts),
+        help='{0}: {1}'.format('name of chart, one of',
+                               ', '.join(sorted(GitChart.charts))))
+    parser.add_argument(
+        'output',
+        help='output file (svg or png), special value "-" displays SVG '
+        'content on standard output')
+    parser.add_argument(
+        '-v', '--version',
+        action='version', version=VERSION)
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
@@ -386,7 +400,7 @@ def main():
     # read data on standard input
     in_data = ''
     while True:
-        inr, outr, exceptr = select.select([sys.stdin], [], [], 0)
+        inr = select.select([sys.stdin], [], [], 0)[0]
         if not inr:
             break
         data = os.read(sys.stdin.fileno(), 4096)
