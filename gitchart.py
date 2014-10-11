@@ -104,7 +104,8 @@ class GitChart(object):
             proc1 = subprocess.Popen(command1, stdout=subprocess.PIPE,
                                      cwd=self.repository)
             proc2 = subprocess.Popen(command2, stdin=proc1.stdout,
-                                     stdout=subprocess.PIPE)
+                                     stdout=subprocess.PIPE,
+                                     cwd=self.repository)
             proc1.stdout.close()
             return proc2.communicate()[0].decode('utf-8', errors='ignore') \
                 .strip().split('\n')
