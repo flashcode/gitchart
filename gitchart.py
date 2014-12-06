@@ -387,7 +387,8 @@ def main():
     parser.add_argument(
         '-j', '--js',
         default=','.join(pygal_config.js),
-        help='comma-separated list of the two javascript files used in SVG')
+        help='comma-separated list of the two javascript files/links used in '
+        'SVG')
     parser.add_argument(
         'chart',
         metavar='chart', choices=sorted(GitChart.charts),
