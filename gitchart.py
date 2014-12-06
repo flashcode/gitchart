@@ -85,7 +85,7 @@ class GitChart(object):
                           '#ff00cc', '#899ca1', '#bf4646'))
 
     def __init__(self, chart_name, title=None, repository='.', output=None,
-                 max_diff=20, sort_max=0, js=None, in_data=None):
+                 max_diff=20, sort_max=0, js='', in_data=None):
         self.chart_name = chart_name
         self.title = title if title is not None else self.charts[chart_name]
         self.repository = repository
