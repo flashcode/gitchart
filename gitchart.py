@@ -41,15 +41,12 @@ from __future__ import division, print_function
 import argparse
 import datetime
 import os
+import pygal
 import re
 import select
 import subprocess
 import sys
 import traceback
-
-from pygal import Bar, Dot, Pie
-from pygal.style import Style
-from pygal.config import Config
 
 VERSION = '1.3-dev'
 
@@ -75,15 +72,17 @@ class GitChart(object):
     months = [datetime.date(2001, month, 1).strftime('%b')
               for month in range(1, 13)]
     # Pygal style with transparent background and custom colors
-    style = Style(background='transparent',
-                  plot_background='transparent',
-                  foreground='rgba(0, 0, 0, 0.9)',
-                  foreground_light='rgba(0, 0, 0, 0.6)',
-                  foreground_dark='rgba(0, 0, 0, 0.2)',
-                  opacity_hover='.4',
-                  colors=('#9999ff', '#8cedff', '#b6e354',
-                          '#feed6c', '#ff9966', '#ff0000',
-                          '#ff00cc', '#899ca1', '#bf4646'))
+    style = pygal.style.Style(
+        background='transparent',
+        plot_background='transparent',
+        foreground='rgba(0, 0, 0, 0.9)',
+        foreground_light='rgba(0, 0, 0, 0.6)',
+        foreground_dark='rgba(0, 0, 0, 0.2)',
+        opacity_hover='.4',
+        colors=('#9999ff', '#8cedff', '#b6e354',
+                '#feed6c', '#ff9966', '#ff0000',
+                '#ff00cc', '#899ca1', '#bf4646')
+    )
 
     # pylint: disable=too-many-arguments
     def __init__(self, chart_name, title=None, repository='.', output=None,
@@ -94,7 +93,7 @@ class GitChart(object):
         self.output = output
         self.max_diff = max_diff
         self.sort_max = sort_max
-        self.js = js.split(',')
+        self.javascript = js.split(',')
         self.in_data = in_data
 
     def _git_command(self, command1, command2=None):
@@ -124,9 +123,9 @@ class GitChart(object):
     def _generate_bar_chart(self, data, sorted_keys=None, max_keys=0,
                             max_x_labels=0, x_label_rotation=0):
         """Generate a bar chart."""
-        bar_chart = Bar(style=self.style, show_legend=False,
-                        x_label_rotation=x_label_rotation,
-                        label_font_size=12, js=self.js)
+        bar_chart = pygal.Bar(style=self.style, show_legend=False,
+                              x_label_rotation=x_label_rotation,
+                              label_font_size=12, js=self.javascript)
         bar_chart.title = self.title
         # sort and keep max entries (if asked)
         if self.sort_max != 0:
@@ -158,8 +157,8 @@ class GitChart(object):
         # format of lines in stdout:   278  John Doe
         stdout = self._git_command(['git', 'log', '--pretty=short'],
                                    ['git', 'shortlog', '-sn'])
-        pie_chart = Pie(style=self.style, truncate_legend=100,
-                        value_font_size=12, js=self.js)
+        pie_chart = pygal.Pie(style=self.style, truncate_legend=100,
+                              value_font_size=12, js=self.javascript)
         pie_chart.title = self.title
         count = 0
         count_others = 0
@@ -199,7 +198,7 @@ class GitChart(object):
         for line in stdout:
             wday, _, _, _, hour, _ = line.split()
             commits[wday[:-1]][hour.split(':')[0]] += 1
-        dot_chart = Dot(style=self.style, js=self.js)
+        dot_chart = pygal.Dot(style=self.style, js=self.javascript)
         dot_chart.title = self.title
         dot_chart.x_labels = ['{0:02d}'.format(hh) for hh in range(0, 24)]
         for day in self.weekdays:
@@ -317,8 +316,8 @@ class GitChart(object):
             if not ext:
                 ext = '(no extension)'
             extensions[ext] = extensions.get(ext, 0) + 1
-        pie_chart = Pie(style=self.style, truncate_legend=100,
-                        value_font_size=12, js=self.js)
+        pie_chart = pygal.Pie(style=self.style, truncate_legend=100,
+                              value_font_size=12, js=self.javascript)
         pie_chart.title = self.title
         count = 0
         count_others = 0
@@ -362,7 +361,7 @@ class GitChart(object):
 def main():
     """Main function, entry point."""
     # parse command line arguments
-    pygal_config = Config()
+    pygal_config = pygal.Config()
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description='Generate statistic charts for a git repository.',
@@ -410,8 +409,8 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     # check javascript files
-    js = args.js.split(',')
-    if not js or len(js) != 2 or not js[0] or not js[1]:
+    js_list = args.js.split(',')
+    if not js_list or len(js_list) != 2 or not js_list[0] or not js_list[1]:
         sys.exit('ERROR: invalid javascript files')
 
     # read data on standard input
