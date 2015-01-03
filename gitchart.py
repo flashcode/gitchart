@@ -51,7 +51,7 @@ from pygal import Bar, Dot, Pie
 from pygal.style import Style
 from pygal.config import Config
 
-VERSION = '1.2'
+VERSION = '1.3-dev'
 
 
 class GitChart(object):
