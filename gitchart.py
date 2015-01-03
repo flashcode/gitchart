@@ -54,6 +54,7 @@ from pygal.config import Config
 VERSION = '1.3-dev'
 
 
+# pylint: disable=too-few-public-methods,too-many-instance-attributes
 class GitChart(object):
     """Generate a git stat chart."""
 
@@ -84,6 +85,7 @@ class GitChart(object):
                           '#feed6c', '#ff9966', '#ff0000',
                           '#ff00cc', '#899ca1', '#bf4646'))
 
+    # pylint: disable=too-many-arguments
     def __init__(self, chart_name, title=None, repository='.', output=None,
                  max_diff=20, sort_max=0, js='', in_data=None):
         self.chart_name = chart_name
@@ -118,6 +120,7 @@ class GitChart(object):
             return proc.communicate()[0].decode('utf-8', errors='ignore') \
                 .strip().split('\n')
 
+    # pylint: disable=too-many-arguments
     def _generate_bar_chart(self, data, sorted_keys=None, max_keys=0,
                             max_x_labels=0, x_label_rotation=0):
         """Generate a bar chart."""
