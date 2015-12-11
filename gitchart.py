@@ -155,7 +155,7 @@ class GitChart(object):
     def _chart_authors(self):
         """Generate pie chart with git authors."""
         # format of lines in stdout:   278  John Doe
-        stdout = self._git_command(['git', 'log', '--pretty=short'],
+        stdout = self._git_command(['git', 'log', '--all', '--pretty=short'],
                                    ['git', 'shortlog', '-sn'])
         pie_chart = pygal.Pie(style=self.style, truncate_legend=100,
                               value_font_size=12, js=self.javascript)
@@ -180,7 +180,7 @@ class GitChart(object):
     def _chart_commits_hour_day(self):
         """Generate bar chart with commits by hour of day."""
         # format of lines in stdout: 2013-03-15 18:27:55 +0100
-        stdout = self._git_command(['git', 'log', '--date=iso',
+        stdout = self._git_command(['git', 'log', '--all', '--date=iso',
                                     '--pretty=format:%ad'])
         commits = {'{0:02d}'.format(hour): 0 for hour in range(0, 24)}
         for line in stdout:
@@ -191,7 +191,7 @@ class GitChart(object):
     def _chart_commits_hour_week(self):
         """Generate dot chart with commits by hour of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
-        stdout = self._git_command(['git', 'log', '--date=rfc',
+        stdout = self._git_command(['git', 'log', '--all', '--date=rfc',
                                     '--pretty=format:%ad'])
         commits = {day: {'{0:02d}'.format(hour): 0 for hour in range(0, 24)}
                    for day in self.weekdays}
@@ -209,7 +209,7 @@ class GitChart(object):
     def _chart_commits_day(self):
         """Generate bar chart with commits by day."""
         # format of lines in stdout: 2013-03-15
-        stdout = self._git_command(['git', 'log', '--date=short',
+        stdout = self._git_command(['git', 'log', '--all', '--date=short',
                                     '--pretty=format:%ad'])
         commits = {}
         for line in stdout:
@@ -221,7 +221,7 @@ class GitChart(object):
     def _chart_commits_day_week(self):
         """Generate bar chart with commits by day of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
-        stdout = self._git_command(['git', 'log', '--date=rfc',
+        stdout = self._git_command(['git', 'log', '--all', '--date=rfc',
                                     '--pretty=format:%ad'])
         commits = {day: 0 for day in self.weekdays}
         for line in stdout:
@@ -234,7 +234,7 @@ class GitChart(object):
     def _chart_commits_month(self):
         """Generate bar chart with commits by month of year."""
         # format of lines in stdout: 2013-03-15
-        stdout = self._git_command(['git', 'log', '--date=short',
+        stdout = self._git_command(['git', 'log', '--all', '--date=short',
                                     '--pretty=format:%ad'])
         commits = {month: 0 for month in self.months}
         for line in stdout:
@@ -248,7 +248,7 @@ class GitChart(object):
     def _chart_commits_year(self):
         """Generate bar chart with commits by year."""
         # format of lines in stdout: 2013-03-15
-        stdout = self._git_command(['git', 'log', '--date=short',
+        stdout = self._git_command(['git', 'log', '--all', '--date=short',
                                     '--pretty=format:%ad'])
         commits = {}
         for line in stdout:
@@ -260,7 +260,7 @@ class GitChart(object):
     def _chart_commits_year_month(self):
         """Generate bar chart with commits by year/month."""
         # format of lines in stdout: 2013-03-15
-        stdout = self._git_command(['git', 'log', '--date=short',
+        stdout = self._git_command(['git', 'log', '--all', '--date=short',
                                     '--pretty=format:%ad'])
         commits = {}
         min_date = 999999
@@ -298,7 +298,7 @@ class GitChart(object):
             #   v0.3.0         =>  0.3.0
             tag2 = re.sub('([^0-9]+)', ' ', tag).strip().replace(' ', '.')
             commits[tag2] = len(
-                self._git_command(['git', 'log',
+                self._git_command(['git', 'log', '--all',
                                    oldtag + '..' + tag if oldtag else tag,
                                    '--pretty=oneline']))
             oldtag = tag
