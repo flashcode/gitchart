@@ -46,7 +46,7 @@ Generate bar chart with commits by version (tag):
 
 ## Copyright
 
-Copyright (C) 2013-2015 Sébastien Helleu <flashcode@flashtux.org>
+Copyright (C) 2013-2016 Sébastien Helleu <flashcode@flashtux.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
