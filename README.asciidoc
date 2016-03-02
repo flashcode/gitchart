@@ -1,4 +1,9 @@
-## Description
+= gitchart
+:author: Sébastien Helleu
+:email: flashcode@flashtux.org
+:lang: en
+
+== Description
 
 `gitchart.py` is a Python script to build charts from a Git repository.
 
@@ -10,41 +15,53 @@ It can build following charts, as SVG or PNG:
 * commits by hour of week (dot chart)
 * files by type (pie chart)
 
-## Install
+== Install
 
 The script requires Python >= 2.7 and [Pygal](http://pygal.org/), which can be
 installed with this command:
 
-    # pip install pygal
+----
+# pip install pygal
+----
 
-Note: cairosvg is required to generate PNG files.
+[NOTE]
+`cairosvg` is required to generate PNG files.
 
-## Usage
+== Usage
 
 See output of command:
 
-    $ python gitchart.py -h
+----
+$ python gitchart.py -h
+----
 
-## Examples
+== Examples
 
 Generate pie chart with authors:
 
-    $ python gitchart.py -t "Git authors on project X" -r /path/to/gitrepo/ authors authors.svg
+----
+$ python gitchart.py -t "Git authors on project X" -r /path/to/gitrepo/ authors authors.svg
+----
 
 Generate bar chart with commits by year:
 
-    $ python gitchart.py -r /path/to/gitrepo/ commits_year commits_year.svg
+----
+$ python gitchart.py -r /path/to/gitrepo/ commits_year commits_year.svg
+----
 
 Generate bar chart with commits by version (tag):
 
-    $ cd /path/to/gitrepo/
-    $ git tag | python /path/to/gitchart.py commits_version /tmp/commits_version.svg
+----
+$ cd /path/to/gitrepo/
+$ git tag | python /path/to/gitchart.py commits_version /tmp/commits_version.svg
+----
 
-## Demo
+== Demo
 
-`gitchart.py` is used to build statistics for WeeChat: http://weechat.org/dev/stats/
+`gitchart.py` is used to build statistics for WeeChat:
+https://weechat.org/dev/stats/
 
-## Copyright
+== Copyright
 
 Copyright (C) 2013-2016 Sébastien Helleu <flashcode@flashtux.org>
 
