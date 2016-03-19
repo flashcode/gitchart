@@ -49,7 +49,7 @@ Generate bar chart with commits by year:
 $ python gitchart.py -r /path/to/gitrepo/ commits_year commits_year.svg
 ----
 
-Generate bar chart with commits by version (tag):
+Generate bar chart with commits by version (git tag):
 
 ----
 $ cd /path/to/gitrepo/
