@@ -389,8 +389,7 @@ def main():
     parser.add_argument(
         '-j', '--js',
         default=','.join(pygal_config.js),
-        help='comma-separated list of the two javascript files/links used in '
-        'SVG')
+        help='comma-separated list of javascript files/links used in SVG')
     parser.add_argument(
         'chart',
         metavar='chart', choices=sorted(GitChart.charts),
@@ -409,9 +408,8 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     # check javascript files
-    js_list = args.js.split(',')
-    if not js_list or len(js_list) != 2 or not js_list[0] or not js_list[1]:
-        sys.exit('ERROR: invalid javascript files')
+    if not args.js:
+        sys.exit('ERROR: missing javascript file(s)')
 
     # read data on standard input
     in_data = ''
