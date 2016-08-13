@@ -1,0 +1,13 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.4"
+
+install:
+  - "pip install flake8"
+  - "pip install pylint"
+
+script:
+  - flake8 gitchart.py
+  - pylint gitchart.py
