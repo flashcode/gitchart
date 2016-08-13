@@ -41,12 +41,13 @@ from __future__ import division, print_function
 import argparse
 import datetime
 import os
-import pygal
 import re
 import select
 import subprocess
 import sys
 import traceback
+
+import pygal
 
 VERSION = '1.3-dev'
 
@@ -353,7 +354,7 @@ class GitChart(object):
         try:
             # call method to build chart (name of method is dynamic)
             return getattr(self, '_chart_' + self.chart_name)()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             traceback.print_exc()
             return False
 
