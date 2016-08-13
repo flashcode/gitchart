@@ -5,8 +5,7 @@ python:
   - "3.4"
 
 install:
-  - "pip install flake8"
-  - "pip install pylint"
+  - "pip install flake8 pylint pygal"
 
 script:
   - flake8 gitchart.py
