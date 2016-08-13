@@ -49,7 +49,7 @@ import traceback
 
 import pygal
 
-VERSION = '1.3-dev'
+VERSION = '1.3'
 
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
