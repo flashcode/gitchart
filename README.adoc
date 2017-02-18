@@ -17,7 +17,7 @@ It can build following charts, as SVG or PNG:
 
 == Install
 
-The script requires Python >= 2.7 and [Pygal](http://pygal.org/), which can be
+The script requires Python >= 2.7 and http://pygal.org/[Pygal], which can be
 installed with this command:
 
 ----
