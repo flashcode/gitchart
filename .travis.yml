@@ -1,12 +1,16 @@
+sudo: false
 language: python
-
-python:
-  - "2.7"
-  - "3.4"
-
-install:
-  - "pip install flake8 pylint pygal"
-
-script:
-  - flake8 gitchart.py
-  - pylint gitchart.py
+python: "3.5"
+matrix:
+  include:
+    env: TOX_ENV=py36
+    python: "3.6"
+env:
+  - TOX_ENV=py27
+  - TOX_ENV=py33
+  - TOX_ENV=py34
+  - TOX_ENV=py35
+  - TOX_ENV=lint
+install: pip install tox
+script: tox -e $TOX_ENV
+cache: pip
