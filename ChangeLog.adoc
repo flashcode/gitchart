@@ -4,6 +4,10 @@
 :lang: en
 
 
+== Version 1.4 (under dev)
+
+* add setup.py
+
 == Version 1.3 (2016-08-13)
 
 * fix check of javascript command line argument (issue #3)

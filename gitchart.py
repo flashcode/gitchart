@@ -3,22 +3,23 @@
 #
 # Copyright (C) 2013-2017 Sébastien Helleu <flashcode@flashtux.org>
 #
-# This program is free software; you can redistribute it and/or modify
+# This file is part of gitchart.
+#
+# Gitchart is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# Gitchart is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with gitchart.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Generate statistic charts for a git repository using pygal
-(http://pygal.org).
+Generate statistic charts on Git repositories using pygal (http://pygal.org).
 
 Charts supported:
                       |       |                           | format of data
