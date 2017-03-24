@@ -35,7 +35,7 @@ $ python setup.py install
 ----
 
 [WARNING]
-A *fake* and *untrusted* package was added by an usurper on Pypi. +
+A *fake* and *untrusted* package was added by an usurper on PyPI. +
 This is *_NOT an official gitchart package_* and was made without
 my authorization. +
 I recommend users to *NOT* install this untrusted version, I can't give any
