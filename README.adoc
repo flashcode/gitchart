@@ -34,6 +34,16 @@ You can install gitchart with this command from the source repository:
 $ python setup.py install
 ----
 
+[WARNING]
+A *fake* and *untrusted* package was added by an usurper on Pypi. +
+This is *_NOT an official gitchart package_* and was made without
+my authorization. +
+I recommend users to *NOT* install this untrusted version, I can't give any
+guarantee on its contents. +
+And the "gitchart" organization on GitHub is a fork of this project with different
+content (the official gitchart URL is https://github.com/flashcode/gitchart). +
+See the https://github.com/flashcode/gitchart/issues/5[issue #5] for more information.
+
 == Usage
 
 See output of command:
