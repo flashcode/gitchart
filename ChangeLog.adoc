@@ -6,6 +6,7 @@
 
 == Version 1.4 (under dev)
 
+* add option -m/--no-merges to not count merge commits in git log commands
 * add setup.py
 
 == Version 1.3 (2016-08-13)
