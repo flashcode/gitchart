@@ -115,14 +115,14 @@ class GitChart(object):
                                      stdout=subprocess.PIPE,
                                      cwd=self.repository)
             proc1.stdout.close()
-            return proc2.communicate()[0].decode('utf-8', errors='ignore') \
-                .strip().split('\n')
-        else:
-            # execute a single git cmd and return output
-            proc = subprocess.Popen(command1, stdout=subprocess.PIPE,
-                                    cwd=self.repository)
-            return proc.communicate()[0].decode('utf-8', errors='ignore') \
-                .strip().split('\n')
+            return (proc2.communicate()[0].decode('utf-8', errors='ignore')
+                    .strip().split('\n'))
+
+        # execute a single git cmd and return output
+        proc = subprocess.Popen(command1, stdout=subprocess.PIPE,
+                                cwd=self.repository)
+        return (proc.communicate()[0].decode('utf-8', errors='ignore')
+                .strip().split('\n'))
 
     def _git_command_log(self, arguments, command2=None):
         """
