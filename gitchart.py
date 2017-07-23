@@ -309,8 +309,9 @@ class GitChart(object):
             #   v0.3.0         =>  0.3.0
             tag2 = re.sub('([^0-9]+)', ' ', tag).strip().replace(' ', '.')
             commits[tag2] = len(
-                self._git_command_log([oldtag + '..' + tag if oldtag else tag,
-                                       '--pretty=oneline']))
+                self._git_command(['git', 'log',
+                                   oldtag + '..' + tag if oldtag else tag,
+                                   '--pretty=oneline']))
             oldtag = tag
         self._generate_bar_chart(commits, x_label_rotation=90)
         return True
