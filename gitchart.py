@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2017 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2013-2018 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of gitchart.
 #
