@@ -9,4 +9,4 @@ install:
 
 script:
   - flake8 gitchart.py
-  - pylint gitchart.py
+  - pylint --disable=R0205 gitchart.py
