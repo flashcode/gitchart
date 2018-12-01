@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with gitchart.  If not, see <http://www.gnu.org/licenses/>.
+# along with gitchart.  If not, see <https://www.gnu.org/licenses/>.
 
 """
 Generate statistic charts on Git repositories using pygal (http://pygal.org).
