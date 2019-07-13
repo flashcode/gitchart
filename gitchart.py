@@ -22,19 +22,20 @@
 Generate statistic charts on Git repositories using pygal (http://pygal.org).
 
 Charts supported:
-                      |       |                           | format of data
-   name               | chart | description               | expected (stdin)
-   -------------------+-------+---------------------------+-----------------
-   authors            | pie   | git authors               | -
-   commits_hour_day   | bar   | commits by hour of day    | -
-   commits_hour_week  | dot   | commits by hour of week   | -
-   commits_day        | bar   | commits by day            | -
-   commits_day_week   | bar   | commits by day of week    | -
-   commits_month      | bar   | commits by month of year  | -
-   commits_year       | bar   | commits by year           | -
-   commits_year_month | bar   | commits by year/month     | -
-   commits_version    | bar   | commits by tag/version    | git tag
-   files_type         | pie   | files by type (extension) | -
+                      |       |                             | format of data
+   name               | chart | description                 | expected (stdin)
+   -------------------+-------+-----------------------------+-----------------
+   authors            | pie   | git authors                 | -
+   tickets_author     | pie   | processed tickets by author | -
+   commits_hour_day   | bar   | commits by hour of day      | -
+   commits_hour_week  | dot   | commits by hour of week     | -
+   commits_day        | bar   | commits by day              | -
+   commits_day_week   | bar   | commits by day of week      | -
+   commits_month      | bar   | commits by month of year    | -
+   commits_year       | bar   | commits by year             | -
+   commits_year_month | bar   | commits by year/month       | -
+   commits_version    | bar   | commits by tag/version      | git tag
+   files_type         | pie   | files by type (extension)   | -
 """
 
 from __future__ import division, print_function
@@ -52,6 +53,11 @@ import pygal
 
 VERSION = '1.4-dev'
 
+ISSUES_REGEX_DEFAULT = re.compile(
+    r'(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)'
+    r' *#([0-9]+)'
+)
+
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class GitChart(object):
@@ -59,6 +65,7 @@ class GitChart(object):
 
     charts = {
         'authors': 'Authors',
+        'tickets_author': 'Tickets processed by author',
         'commits_hour_day': 'Commits by hour of day',
         'commits_hour_week': 'Commits by hour of week',
         'commits_day': 'Commits by day',
@@ -88,7 +95,8 @@ class GitChart(object):
 
     # pylint: disable=too-many-arguments
     def __init__(self, chart_name, title=None, repository='.', no_merges=False,
-                 output=None, max_diff=20, sort_max=0, js='', in_data=None):
+                 output=None, max_diff=20, sort_max=0, issues_regex='',
+                 js='', in_data=None):
         self.chart_name = chart_name
         self.title = title if title is not None else self.charts[chart_name]
         self.repository = repository
@@ -98,6 +106,7 @@ class GitChart(object):
         self.output = output
         self.max_diff = max_diff
         self.sort_max = sort_max
+        self.issues_regex = issues_regex
         self.javascript = js.split(',')
         self.in_data = in_data
 
@@ -186,6 +195,41 @@ class GitChart(object):
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
                 pie_chart.add(name + ' ({0})'.format(number), int(number))
+            else:
+                count_others += 1
+                sum_others += int(number)
+        if count_others:
+            pie_chart.add('{0} others ({1})'.format(count_others, sum_others),
+                          sum_others)
+        self._render(pie_chart)
+        return True
+
+    def _chart_tickets_author(self):
+        """Generate pie chart with processed tickets, by author."""
+        # format of lines in stdout: John Doe,refs #1234: fix something
+        stdout = self._git_command_log('--pretty=format:%aN,%s')
+        pie_chart = pygal.Pie(style=self.style, truncate_legend=100,
+                              value_font_size=12, js=self.javascript)
+        pie_chart.title = self.title
+        count = 0
+        count_others = 0
+        sum_others = 0
+        tickets_author = {}
+        for commit in stdout:
+            author, msg = commit.split(',', 1)
+            match = re.search(self.issues_regex, msg)
+            if match and match.lastindex:
+                tickets_author.setdefault(author, set()).add(match.group(1))
+        tickets_author = {
+            name: len(tickets)
+            for name, tickets in tickets_author.items()
+        }
+        for name, number in sorted(tickets_author.items(),
+                                   key=lambda x: x[1],
+                                   reverse=True):
+            count += 1
+            if self.max_diff <= 0 or count <= self.max_diff:
+                pie_chart.add(name + ' ({0})'.format(number), number)
             else:
                 count_others += 1
                 sum_others += int(number)
@@ -393,7 +437,8 @@ def main():
         type=int, default=20,
         help=('max different entries in chart: after this number, an entry is '
               'counted in "others" (for charts authors and files_type); max '
-              'number of days (for chart commits_day); 0=unlimited'))
+              'number of days (for charts authors, tickets_author, '
+              'commits_day, files_type); 0=unlimited'))
     parser.add_argument(
         '-s', '--sort-max',
         type=int, default=0,
@@ -402,6 +447,12 @@ def main():
               'commits_hour_day, commits_day, commits_day_week, '
               'commits_month, commits_year, commits_year_month, '
               'commits_version); 0=no sort/max'))
+    parser.add_argument(
+        '-i', '--issues-regex',
+        default=ISSUES_REGEX_DEFAULT,
+        help=('regular expression to match issues in subject of commits '
+              '(the first group captured is used as the issue number) '
+              '(for chart tickets_author)'))
     parser.add_argument(
         '-j', '--js',
         default=','.join(pygal_config.js),
@@ -441,8 +492,8 @@ def main():
 
     # generate chart
     chart = GitChart(args.chart, args.title, args.repo, args.no_merges,
-                     args.output, args.max_diff, args.sort_max, args.js,
-                     in_data)
+                     args.output, args.max_diff, args.sort_max,
+                     args.issues_regex, args.js, in_data)
     if chart.generate():
         sys.exit(0)
 
