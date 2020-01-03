@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2019 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2013-2020 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of gitchart.
 #
