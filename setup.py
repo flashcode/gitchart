@@ -25,6 +25,7 @@ LONG_DESCRIPTION = """
 Gitchart can generate following charts:
 
 * authors,
+* processed tickets by author,
 * commits by hour of day,
 * commits by hour of week,
 * commits by day,
