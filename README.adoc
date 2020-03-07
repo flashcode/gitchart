@@ -3,7 +3,7 @@
 :email: flashcode@flashtux.org
 :lang: en
 
-== Description
+image:https://github.com/flashcode/gitchart/workflows/Tests/badge.svg["Tests", link="https://github.com/flashcode/gitchart/actions"]
 
 Gitchart is a Python script to build charts from a Git repository.
 
