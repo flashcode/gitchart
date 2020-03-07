@@ -51,7 +51,7 @@ import traceback
 
 import pygal
 
-VERSION = '1.5-dev'
+VERSION = '1.5'
 
 ISSUES_REGEX_DEFAULT = re.compile(
     r'(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)'
