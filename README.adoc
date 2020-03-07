@@ -9,7 +9,7 @@ Gitchart is a Python script to build charts from a Git repository.
 
 It can build following charts, as SVG or PNG:
 
-* authors (pie chart)
+* authors, processed tickets by author (pie charts)
 * commits by hour of day, day, day of week, month of year, year, year/month
   (bar charts)
 * commits by hour of week (dot chart)
