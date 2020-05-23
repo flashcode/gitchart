@@ -4,7 +4,7 @@
 :lang: en
 
 image:https://img.shields.io/pypi/v/gitchart.svg["PyPI", link="https://pypi.org/project/gitchart/"]
-image:https://github.com/flashcode/gitchart/workflows/Tests/badge.svg["Tests", link="https://github.com/flashcode/gitchart/actions"]
+image:https://github.com/flashcode/gitchart/workflows/CI/badge.svg["CI", link="https://github.com/flashcode/gitchart/actions"]
 
 Gitchart is a Python script to build charts from a Git repository.
 
