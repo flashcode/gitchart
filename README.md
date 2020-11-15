@@ -17,7 +17,7 @@ It can build following charts, as SVG or PNG:
 Gitchart requires:
 
 - Python ≥ 3.6
-- http://pygal.org/[Pygal] (`pip install pygal`)
+- [Pygal](http://www.pygal.org/) (`pip install pygal`)
 
 Optional dependencies:
 
