@@ -21,21 +21,6 @@ from codecs import open
 from setuptools import setup
 
 DESCRIPTION = 'Generate statistic charts on Git repositories.'
-LONG_DESCRIPTION = """
-Gitchart can generate following charts:
-
-* authors,
-* processed tickets by author,
-* commits by hour of day,
-* commits by hour of week,
-* commits by day,
-* commits by day of week,
-* commits by month of year,
-* commits by year,
-* commits by year/month,
-* commits by tag/version,
-* files by type (extension).
-"""
 
 with open('README.md', 'r', 'utf-8') as f:
     readme = f.read()
