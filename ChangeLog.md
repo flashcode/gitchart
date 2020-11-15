@@ -1,6 +1,6 @@
 # gitchart ChangeLog
 
-## Version 1.6 (under dev)
+## Version 1.6.0 (under dev)
 
 - Convert README and ChangeLog to markdown.
 

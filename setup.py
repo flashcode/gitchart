@@ -43,7 +43,7 @@ with open('README.md', 'r', 'utf-8') as f:
 
 setup(
     name='gitchart',
-    version='1.6-dev',
+    version='1.6.0-dev',
     description=DESCRIPTION,
     long_description=readme,
     long_description_content_type='text/markdown',
