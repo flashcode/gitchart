@@ -18,6 +18,7 @@
 # along with gitchart.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from codecs import open
 from setuptools import setup
 
 DESCRIPTION = 'Generate statistic charts on Git repositories.'
@@ -37,11 +38,15 @@ Gitchart can generate following charts:
 * files by type (extension).
 """
 
+with open('README.md', 'r', 'utf-8') as f:
+    readme = f.read()
+
 setup(
     name='gitchart',
     version='1.6-dev',
     description=DESCRIPTION,
-    long_description=LONG_DESCRIPTION,
+    long_description=readme,
+    long_description_content_type='text/markdown',
     author='Sébastien Helleu',
     author_email='flashcode@flashtux.org',
     url='https://github.com/flashcode/gitchart',
