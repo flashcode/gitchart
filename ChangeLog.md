@@ -1,4 +1,4 @@
-# gitchart ChangeLog
+# Gitchart ChangeLog
 
 ## Version 2.0.0 (under dev)
 

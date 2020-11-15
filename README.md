@@ -1,4 +1,4 @@
-# gitchart
+# Gitchart
 
 [![PyPI](https://img.shields.io/pypi/v/gitchart.svg)](https://pypi.org/project/gitchart/)
 [![Build Status](https://github.com/flashcode/gitchart/workflows/CI/badge.svg)](https://github.com/flashcode/gitchart/actions?query=workflow%3A%22CI%22)
@@ -25,7 +25,7 @@ Optional dependencies:
 
 ## Install
 
-You can install gitchart with this command from the source repository:
+You can install Gitchart with this command from the source repository:
 
 ```
 $ python setup.py install

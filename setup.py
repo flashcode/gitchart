@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2013-2020 Sébastien Helleu <flashcode@flashtux.org>
 #
-# This file is part of gitchart.
+# This file is part of Gitchart.
 #
 # Gitchart is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with gitchart.  If not, see <https://www.gnu.org/licenses/>.
+# along with Gitchart.  If not, see <https://www.gnu.org/licenses/>.
 #
 
 from codecs import open
