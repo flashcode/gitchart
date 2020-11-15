@@ -39,7 +39,7 @@ Gitchart can generate following charts:
 
 setup(
     name='gitchart',
-    version='1.5',
+    version='1.6-dev',
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     author='Sébastien Helleu',
