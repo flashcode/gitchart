@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
 # Copyright (C) 2013-2020 Sébastien Helleu <flashcode@flashtux.org>
 #
@@ -38,8 +37,6 @@ Charts supported:
    files_type         | pie   | files by type (extension)   | -
 """
 
-from __future__ import division, print_function
-
 import argparse
 import datetime
 import os
@@ -51,7 +48,7 @@ import traceback
 
 import pygal
 
-VERSION = '1.6.0-dev'
+VERSION = '2.0.0-dev'
 
 ISSUES_REGEX_DEFAULT = re.compile(
     r'(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)'
@@ -194,12 +191,12 @@ class GitChart(object):
             (number, name) = author.strip(' ').split('\t', 1)
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
-                pie_chart.add(name + ' ({0})'.format(number), int(number))
+                pie_chart.add(name + f' ({number})', int(number))
             else:
                 count_others += 1
                 sum_others += int(number)
         if count_others:
-            pie_chart.add('{0} others ({1})'.format(count_others, sum_others),
+            pie_chart.add(f'{count_others} others ({sum_others})',
                           sum_others)
         self._render(pie_chart)
         return True
@@ -229,12 +226,12 @@ class GitChart(object):
                                    reverse=True):
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
-                pie_chart.add(name + ' ({0})'.format(number), number)
+                pie_chart.add(name + f' ({number})', number)
             else:
                 count_others += 1
                 sum_others += int(number)
         if count_others:
-            pie_chart.add('{0} others ({1})'.format(count_others, sum_others),
+            pie_chart.add(f'{count_others} others ({sum_others})',
                           sum_others)
         self._render(pie_chart)
         return True
@@ -243,7 +240,7 @@ class GitChart(object):
         """Generate bar chart with commits by hour of day."""
         # format of lines in stdout: 2013-03-15 18:27:55 +0100
         stdout = self._git_command_log(['--date=iso', '--pretty=format:%ad'])
-        commits = {'{0:02d}'.format(hour): 0 for hour in range(0, 24)}
+        commits = {f'{hour:02d}': 0 for hour in range(0, 24)}
         for line in stdout:
             commits[line.split()[1].split(':')[0]] += 1
         self._generate_bar_chart(commits)
@@ -253,14 +250,14 @@ class GitChart(object):
         """Generate dot chart with commits by hour of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
         stdout = self._git_command_log(['--date=rfc', '--pretty=format:%ad'])
-        commits = {day: {'{0:02d}'.format(hour): 0 for hour in range(0, 24)}
+        commits = {day: {f'{hour:02d}': 0 for hour in range(0, 24)}
                    for day in self.weekdays}
         for line in stdout:
             wday, _, _, _, hour, _ = line.split()
             commits[wday[:-1]][hour.split(':')[0]] += 1
         dot_chart = pygal.Dot(style=self.style, js=self.javascript)
         dot_chart.title = self.title
-        dot_chart.x_labels = ['{0:02d}'.format(hh) for hh in range(0, 24)]
+        dot_chart.x_labels = [f'{hh:02d}' for hh in range(0, 24)]
         for day in self.weekdays:
             dot_chart.add(day, commits[day])
         self._render(dot_chart)
@@ -325,12 +322,12 @@ class GitChart(object):
             date = (int(year) * 100) + int(month)
             min_date = min(min_date, date)
             max_date = max(max_date, date)
-            year_month = '{0}-{1}'.format(year, month)
+            year_month = f'{year}-{month}'
             commits[year_month] = commits.get(year_month, 0) + 1
         if min_date != 999999:
             date = min_date
             while date < max_date:
-                year_month = '{0:04d}-{1:02d}'.format(date // 100, date % 100)
+                year_month = f'{date // 100:04d}-{date % 100:02d}'
                 commits[year_month] = commits.get(year_month, 0)
                 if date % 100 == 12:
                     # next year, for example: 201312 => 201401 (+89)
@@ -380,13 +377,13 @@ class GitChart(object):
         for ext in sorted(extensions, key=extensions.get, reverse=True):
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
-                pie_chart.add(ext + ' ({0})'.format(extensions[ext]),
+                pie_chart.add(ext + f' ({extensions[ext]})',
                               extensions[ext])
             else:
                 count_others += 1
                 sum_others += extensions[ext]
         if count_others:
-            pie_chart.add('{0} others ({1})'.format(count_others, sum_others),
+            pie_chart.add(f'{count_others} others ({sum_others})',
                           sum_others)
         self._render(pie_chart)
         return True
@@ -457,11 +454,11 @@ def main():
         '-j', '--js',
         default=','.join(pygal_config.js),
         help='comma-separated list of javascript files/links used in SVG')
+    charts = ', '.join(sorted(GitChart.charts))
     parser.add_argument(
         'chart',
         metavar='chart', choices=sorted(GitChart.charts),
-        help='{0}: {1}'.format('name of chart, one of',
-                               ', '.join(sorted(GitChart.charts))))
+        help=f'name of chart, one of: {charts}')
     parser.add_argument(
         'output',
         help=('output file (svg or png), special value "-" displays SVG '

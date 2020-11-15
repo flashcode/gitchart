@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2013-2020 Sébastien Helleu <flashcode@flashtux.org>
 #
@@ -43,7 +42,7 @@ with open('README.md', 'r', 'utf-8') as f:
 
 setup(
     name='gitchart',
-    version='1.6.0-dev',
+    version='2.0.0-dev',
     description=DESCRIPTION,
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -61,7 +60,6 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Version Control',
     ],

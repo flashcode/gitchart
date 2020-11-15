@@ -1,7 +1,8 @@
 # gitchart ChangeLog
 
-## Version 1.6.0 (under dev)
+## Version 2.0.0 (under dev)
 
+- Drop Python 2 support, Python 3.6 is now required.
 - Convert README and ChangeLog to markdown.
 
 ## Version 1.5 (2020-03-07)
