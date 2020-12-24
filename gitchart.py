@@ -124,7 +124,7 @@ class GitChart(object):
             return (proc2.communicate()[0].decode('utf-8', errors='ignore')
                     .strip().split('\n'))
 
-        # execute a single git cmd and return output
+        # execute a single git command and return output
         proc = subprocess.Popen(command1, stdout=subprocess.PIPE,
                                 cwd=self.repository)
         return (proc.communicate()[0].decode('utf-8', errors='ignore')
