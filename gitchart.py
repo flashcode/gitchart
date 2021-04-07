@@ -57,7 +57,7 @@ ISSUES_REGEX_DEFAULT = re.compile(
 
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
-class GitChart(object):
+class GitChart:
     """Generate a git stat chart."""
 
     charts = {

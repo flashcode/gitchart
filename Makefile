@@ -28,4 +28,4 @@ flake8:
 	flake8 . --count --exit-zero --max-complexity=10 --statistics
 
 pylint:
-	pylint --disable=R0205 gitchart.py
+	pylint gitchart.py
