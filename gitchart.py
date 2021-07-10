@@ -115,20 +115,22 @@ class GitChart:
         """
         if command2:
             # pipe the two commands and return output
-            proc1 = subprocess.Popen(command1, stdout=subprocess.PIPE,
-                                     cwd=self.repository)
-            proc2 = subprocess.Popen(command2, stdin=proc1.stdout,
-                                     stdout=subprocess.PIPE,
-                                     cwd=self.repository)
-            proc1.stdout.close()
-            return (proc2.communicate()[0].decode('utf-8', errors='ignore')
-                    .strip().split('\n'))
+            with subprocess.Popen(command1, stdout=subprocess.PIPE,
+                                  cwd=self.repository) as proc1:
+                with subprocess.Popen(command2, stdin=proc1.stdout,
+                                      stdout=subprocess.PIPE,
+                                      cwd=self.repository) as proc2:
+                    proc1.stdout.close()
+                    return (proc2.communicate()[0]
+                            .decode('utf-8', errors='ignore')
+                            .strip().split('\n'))
 
         # execute a single git command and return output
-        proc = subprocess.Popen(command1, stdout=subprocess.PIPE,
-                                cwd=self.repository)
-        return (proc.communicate()[0].decode('utf-8', errors='ignore')
-                .strip().split('\n'))
+        with subprocess.Popen(command1, stdout=subprocess.PIPE,
+                              cwd=self.repository) as proc:
+            return (proc.communicate()[0]
+                    .decode('utf-8', errors='ignore')
+                    .strip().split('\n'))
 
     def _git_command_log(self, arguments, command2=None):
         """
