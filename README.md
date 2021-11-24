@@ -36,7 +36,7 @@ $ python setup.py install
 See output of command:
 
 ```
-$ gitchart -h
+$ gitchart --help
 ```
 
 ## Examples
@@ -44,13 +44,13 @@ $ gitchart -h
 Generate pie chart with authors:
 
 ```
-$ gitchart -t "Git authors on project X" -r /path/to/gitrepo/ authors authors.svg
+$ gitchart --title "Git authors on project X" --repo /path/to/gitrepo/ authors authors.svg
 ```
 
-Generate bar chart with commits by year:
+Generate bar chart with commits by year using dark style:
 
 ```
-$ gitchart -r /path/to/gitrepo/ commits_year commits_year.svg
+$ gitchart --style gitchart_dark --repo /path/to/gitrepo/ commits_year commits_year.svg
 ```
 
 Generate bar chart with commits by version (git tag):
