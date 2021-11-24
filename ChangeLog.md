@@ -1,6 +1,6 @@
 # Gitchart ChangeLog
 
-## Version 2.0.2 (under dev)
+## Version 2.0.2 (2021-11-24)
 
 - Fix CI.
 
