@@ -28,4 +28,4 @@ flake8:
 	flake8 . --count --exit-zero --max-complexity=10 --statistics
 
 pylint:
-	pylint gitchart.py
+	pylint gitchart
