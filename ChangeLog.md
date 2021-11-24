@@ -1,6 +1,6 @@
 # Gitchart ChangeLog
 
-## Version 2.0.1 (under dev)
+## Version 2.0.1 (2021-11-24)
 
 - Add `gitchart` module.
 
