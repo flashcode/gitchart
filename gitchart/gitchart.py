@@ -48,7 +48,12 @@ import traceback
 
 import pygal
 
-VERSION = '2.0.0'
+__version__ = '2.0.1-dev'
+
+__all__ = (
+    '__version__',
+    'main',
+)
 
 ISSUES_REGEX_DEFAULT = re.compile(
     r'(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)'
@@ -511,7 +516,7 @@ def main():
     parser.add_argument(
         '-v', '--version',
         action='version',
-        version=VERSION)
+        version=__version__)
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)

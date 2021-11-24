@@ -19,7 +19,8 @@
 #
 
 from codecs import open
-from setuptools import setup
+from setuptools import setup, find_packages
+from gitchart import __version__ as gitchart_version
 
 DESCRIPTION = 'Generate statistic charts on Git repositories.'
 
@@ -28,7 +29,7 @@ with open('README.md', 'r', 'utf-8') as f:
 
 setup(
     name='gitchart',
-    version='2.0.0',
+    version=gitchart_version,
     description=DESCRIPTION,
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -49,8 +50,10 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Version Control',
     ],
-    packages=['.'],
-    install_requires=['pygal'],
+    packages=find_packages(),
+    install_requires=[
+        'pygal',
+    ],
     entry_points={
         'console_scripts': ['gitchart=gitchart:main'],
     }

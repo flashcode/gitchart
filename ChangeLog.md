@@ -1,5 +1,9 @@
 # Gitchart ChangeLog
 
+## Version 2.0.1 (under dev)
+
+- Add `gitchart` module.
+
 ## Version 2.0.0 (2021-11-24)
 
 - Drop Python 2 support, Python 3.6 is now required.
