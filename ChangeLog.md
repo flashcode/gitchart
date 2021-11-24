@@ -3,6 +3,7 @@
 ## Version 2.0.0 (under dev)
 
 - Drop Python 2 support, Python 3.6 is now required.
+- Add option `-S` / `--style` to choose Pygal style, defaults to custom style `gitchart_light`.
 - Convert README and ChangeLog to markdown.
 
 ## Version 1.5 (2020-03-07)

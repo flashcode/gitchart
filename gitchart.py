@@ -55,6 +55,54 @@ ISSUES_REGEX_DEFAULT = re.compile(
     r' *#([0-9]+)'
 )
 
+# Pygal style with transparent background and custom colors (dark version)
+GITCHART_DARK_STYLE = pygal.style.Style(
+    plot_background='transparent',
+    background='#1a1a1a',
+    foreground='rgba(150, 150, 150, 0.8)',
+    foreground_strong='rgba(220, 220, 220, 0.8)',
+    foreground_subtle='rgba(100, 100, 100, 0.4)',
+    opacity_hover='.4',
+    colors=('#4444ff', '#8cedff', '#b6e354',
+            '#feed6c', '#ff9966', '#ff0000',
+            '#ff00cc', '#899ca1', '#bf4646')
+)
+
+# Pygal style with transparent background and custom colors (light version)
+GITCHART_LIGHT_STYLE = pygal.style.Style(
+    plot_background='transparent',
+    background='transparent',
+    foreground='rgba(0, 0, 0, 0.7)',
+    foreground_strong='rgba(0, 0, 0, 0.9)',
+    foreground_subtle='rgba(0, 0, 0, 0.2)',
+    opacity_hover='.4',
+    colors=('#4444ff', '#8cedff', '#b6e354',
+            '#feed6c', '#ff9966', '#ff0000',
+            '#ff00cc', '#899ca1', '#bf4646')
+)
+
+PYGAL_STYLES = {
+    'gitchart_dark': GITCHART_DARK_STYLE,
+    'gitchart_light': GITCHART_LIGHT_STYLE,
+    'default': pygal.style.DefaultStyle,
+    'dark': pygal.style.DarkStyle,
+    'neon': pygal.style.NeonStyle,
+    'dark_solarized': pygal.style.DarkSolarizedStyle,
+    'light_solarized': pygal.style.LightSolarizedStyle,
+    'light': pygal.style.LightStyle,
+    'clean': pygal.style.CleanStyle,
+    'red_blue': pygal.style.RedBlueStyle,
+    'dark_colorized': pygal.style.DarkColorizedStyle,
+    'light_colorized': pygal.style.LightSolarizedStyle,
+    'turquoise': pygal.style.TurquoiseStyle,
+    'light_green': pygal.style.LightGreenStyle,
+    'dark_green': pygal.style.DarkGreenStyle,
+    'dark_green_blue': pygal.style.DarkGreenBlueStyle,
+    'blue': pygal.style.BlueStyle,
+}
+
+DEFAULT_STYLE = 'gitchart_light'
+
 
 # pylint: disable=too-few-public-methods,too-many-instance-attributes
 class GitChart:
@@ -77,23 +125,11 @@ class GitChart:
                 for day in range(1, 8)]
     months = [datetime.date(2001, month, 1).strftime('%b')
               for month in range(1, 13)]
-    # Pygal style with transparent background and custom colors
-    style = pygal.style.Style(
-        background='transparent',
-        plot_background='transparent',
-        foreground='rgba(0, 0, 0, 0.9)',
-        foreground_light='rgba(0, 0, 0, 0.6)',
-        foreground_dark='rgba(0, 0, 0, 0.2)',
-        opacity_hover='.4',
-        colors=('#9999ff', '#8cedff', '#b6e354',
-                '#feed6c', '#ff9966', '#ff0000',
-                '#ff00cc', '#899ca1', '#bf4646')
-    )
 
     # pylint: disable=too-many-arguments
     def __init__(self, chart_name, title=None, repository='.', no_merges=False,
                  output=None, max_diff=20, sort_max=0, issues_regex='',
-                 js='', in_data=None):
+                 js='', style=DEFAULT_STYLE, in_data=None):
         self.chart_name = chart_name
         self.title = title if title is not None else self.charts[chart_name]
         self.repository = repository
@@ -105,6 +141,7 @@ class GitChart:
         self.sort_max = sort_max
         self.issues_regex = issues_regex
         self.javascript = js.split(',')
+        self.style = PYGAL_STYLES[style]
         self.in_data = in_data
 
     def _git_command(self, command1, command2=None):
@@ -456,6 +493,12 @@ def main():
         '-j', '--js',
         default=','.join(pygal_config.js),
         help='comma-separated list of javascript files/links used in SVG')
+    styles = ', '.join(PYGAL_STYLES.keys())
+    parser.add_argument(
+        '-S', '--style',
+        default=DEFAULT_STYLE,
+        choices=PYGAL_STYLES.keys(),
+        help=f'Pygal style to use, one of: {styles}')
     charts = ', '.join(sorted(GitChart.charts))
     parser.add_argument(
         'chart',
@@ -492,7 +535,7 @@ def main():
     # generate chart
     chart = GitChart(args.chart, args.title, args.repo, args.no_merges,
                      args.output, args.max_diff, args.sort_max,
-                     args.issues_regex, args.js, in_data)
+                     args.issues_regex, args.js, args.style, in_data)
     if chart.generate():
         sys.exit(0)
 
