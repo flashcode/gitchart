@@ -1,6 +1,6 @@
 # Gitchart ChangeLog
 
-## Version 2.0.0 (under dev)
+## Version 2.0.0 (2021-11-24)
 
 - Drop Python 2 support, Python 3.6 is now required.
 - Add option `-S` / `--style` to choose Pygal style, defaults to custom style `gitchart_light`.

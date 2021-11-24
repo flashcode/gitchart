@@ -28,7 +28,7 @@ with open('README.md', 'r', 'utf-8') as f:
 
 setup(
     name='gitchart',
-    version='2.0.0-dev',
+    version='2.0.0',
     description=DESCRIPTION,
     long_description=readme,
     long_description_content_type='text/markdown',
