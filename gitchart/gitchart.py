@@ -160,7 +160,7 @@ class GitChart:
         max_diff=20,
         sort_max=0,
         issues_regex="",
-        js="",
+        js_files="",
         style=DEFAULT_STYLE,
         in_data=None,
     ):
@@ -174,7 +174,7 @@ class GitChart:
         self.max_diff = max_diff
         self.sort_max = sort_max
         self.issues_regex = issues_regex
-        self.javascript = js.split(",")
+        self.javascript = js_files.split(",")
         self.style = PYGAL_STYLES[style]
         self.in_data = in_data
 
