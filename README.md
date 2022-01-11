@@ -66,7 +66,7 @@ Gitchart is used to build statistics for WeeChat: https://weechat.org/dev/stats/
 
 ## Copyright
 
-Copyright © 2013-2021 [Sébastien Helleu](https://github.com/flashcode)
+Copyright © 2013-2022 [Sébastien Helleu](https://github.com/flashcode)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
