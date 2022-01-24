@@ -18,13 +18,12 @@
 # along with Gitchart.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from codecs import open
 from setuptools import setup, find_packages
 from gitchart import __version__ as gitchart_version
 
 DESCRIPTION = 'Generate statistic charts on Git repositories.'
 
-with open('README.md', 'r', 'utf-8') as f:
+with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
 setup(
