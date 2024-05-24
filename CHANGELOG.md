@@ -27,7 +27,7 @@
 
 ## Version 1.3 (2016-08-13)
 
-- Fix check of javascript command line argument (issue #3).
+- Fix check of javascript command line argument ([#3](https://github.com/flashcode/gitchart/issues/3)).
 - Add argument `--all` for git log commands.
 
 ## Version 1.2 (2014-12-06)
