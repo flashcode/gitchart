@@ -149,7 +149,7 @@ class GitChart:
         datetime.date(2001, month, 1).strftime("%b") for month in range(1, 13)
     ]
 
-    # pylint: disable=too-many-positional-arguments
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self,
         chart_name,
@@ -227,7 +227,7 @@ class GitChart:
                 git_log_cmd += [arguments]
         return self._git_command(git_log_cmd, command2)
 
-    # pylint: disable=too-many-positional-arguments
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def _generate_bar_chart(
         self,
         data,
