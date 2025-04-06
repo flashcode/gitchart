@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/gitchart.svg)](https://pypi.org/project/gitchart/)
 [![Build Status](https://github.com/flashcode/gitchart/workflows/CI/badge.svg)](https://github.com/flashcode/gitchart/actions?query=workflow%3A%22CI%22)
 [![CodeQL](https://github.com/flashcode/gitchart/workflows/CodeQL/badge.svg)](https://github.com/flashcode/gitchart/actions?query=workflow%3A%22CodeQL%22)
+[![REUSE status](https://api.reuse.software/badge/github.com/flashcode/gitchart)](https://api.reuse.software/info/github.com/flashcode/gitchart)
 
 Gitchart is a Python script to build charts from a Git repository.
 
