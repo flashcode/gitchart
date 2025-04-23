@@ -11,5 +11,6 @@ path = [
     "README.md",
     "requirements.txt",
 ]
+precedence = "override"
 SPDX-FileCopyrightText = "2013-2025 Sébastien Helleu <flashcode@flashtux.org>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
