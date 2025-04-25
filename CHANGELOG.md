@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2016-2025 Sébastien Helleu <flashcode@flashtux.org>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Gitchart ChangeLog
 
 ## Version 2.0.2 (2021-11-24)

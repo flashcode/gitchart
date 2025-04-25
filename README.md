@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2013-2025 Sébastien Helleu <flashcode@flashtux.org>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Gitchart
 
 [![PyPI](https://img.shields.io/pypi/v/gitchart.svg)](https://pypi.org/project/gitchart/)
@@ -64,6 +70,7 @@ $ git tag | gitchart commits_version /tmp/commits_version.svg
 
 ## Demo
 
+<!-- REUSE-IgnoreStart -->
 Gitchart is used to build statistics for WeeChat: https://weechat.org/dev/stats/
 
 ## Copyright
@@ -82,3 +89,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+<!-- REUSE-IgnoreEnd -->
