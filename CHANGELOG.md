@@ -20,24 +20,24 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## [2.0.0] - 2021-11-24
 
+### Added
+
+- Add option `-S` / `--style` to choose Pygal style, defaults to custom style `gitchart_light`
+
 ### Changed
 
 - **Breaking**: drop Python 2 support, Python 3.6 is now required
 - Convert README and ChangeLog to markdown
 
-### Added
-
-- Add option `-S` / `--style` to choose Pygal style, defaults to custom style `gitchart_light`
-
 ## [1.5] - 2020-03-07
-
-### Changed
-
-- Switch from Travis CI to GitHub actions
 
 ### Added
 
 - Add file requirements.txt
+
+### Changed
+
+- Switch from Travis CI to GitHub actions
 
 ## [1.4] - 2019-07-13
 
@@ -87,15 +87,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## [0.8] - 2013-11-10
 
-### Changed
-
-- **Breaking**: rename chart `commits_hour` to `commits_hour_day` and `commits_day` to `commits_day_week`
-- **Breaking**: rename option `-m` / `--max` to `-d` / `--max-diff`
-
 ### Added
 
 - Add chart "commits_day"
 - Add option `-s` / `--sort-max`
+
+### Changed
+
+- **Breaking**: rename chart `commits_hour` to `commits_hour_day` and `commits_day` to `commits_day_week`
+- **Breaking**: rename option `-m` / `--max` to `-d` / `--max-diff`
 
 ## [0.7] - 2013-11-09
 
@@ -111,14 +111,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## [0.5] - 2013-11-02
 
+### Added
+
+- Add option `-m` / `--max`
+
 ### Changed
 
 - Make options title/repository optional
 - Display SVG on standard output if filename is "-"
-
-### Added
-
-- Add option `-m` / `--max`
 
 ## [0.4] - 2013-10-25
 
