@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2013-2025 Sébastien Helleu <flashcode@flashtux.org>
+SPDX-FileCopyrightText: 2013-2026 Sébastien Helleu <flashcode@flashtux.org>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
@@ -75,7 +75,7 @@ Gitchart is used to build statistics for WeeChat: https://weechat.org/dev/stats/
 
 ## Copyright
 
-Copyright © 2013-2025 [Sébastien Helleu](https://github.com/flashcode)
+Copyright © 2013-2026 [Sébastien Helleu](https://github.com/flashcode)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
