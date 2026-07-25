@@ -24,48 +24,40 @@ It can build following charts, as SVG or PNG:
 
 Gitchart requires:
 
-- Python ≥ 3.6
+- Python ≥ 3.10
 - [Pygal](http://www.pygal.org/) (`pip install pygal`)
 
 Optional dependencies:
 
-- cairosvg, to generate PNG files
-
-## Install
-
-You can install Gitchart with this command from the source repository:
-
-```
-$ python setup.py install
-```
+- [CairoSVG](https://pypi.org/project/CairoSVG/), to generate PNG files
 
 ## Usage
 
 See output of command:
 
-```
-$ gitchart --help
+```bash
+uvx gitchart --help
 ```
 
 ## Examples
 
 Generate pie chart with authors:
 
-```
-$ gitchart --title "Git authors on project X" --repo /path/to/gitrepo/ authors authors.svg
+```bash
+uvx gitchart --title "Git authors on project X" --repo /path/to/gitrepo/ authors authors.svg
 ```
 
 Generate bar chart with commits by year using dark style:
 
-```
-$ gitchart --style gitchart_dark --repo /path/to/gitrepo/ commits_year commits_year.svg
+```bash
+uvx gitchart --style gitchart_dark --repo /path/to/gitrepo/ commits_year commits_year.svg
 ```
 
 Generate bar chart with commits by version (git tag):
 
-```
-$ cd /path/to/gitrepo/
-$ git tag | gitchart commits_version /tmp/commits_version.svg
+```bash
+cd /path/to/gitrepo/
+git tag | uvx gitchart commits_version /tmp/commits_version.svg
 ```
 
 ## Demo

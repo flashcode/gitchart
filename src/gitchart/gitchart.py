@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 #
 # SPDX-FileCopyrightText: 2013-2026 Sébastien Helleu <flashcode@flashtux.org>
 #
@@ -19,8 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Gitchart.  If not, see <https://www.gnu.org/licenses/>.
 
-"""
-Generate statistic charts on Git repositories using pygal (http://pygal.org).
+"""Generate statistic charts on Git repositories using pygal (http://pygal.org).
 
 Charts supported:
                       |       |                             | format of data
@@ -41,25 +39,21 @@ Charts supported:
 
 import argparse
 import datetime
+import importlib.metadata
 import os
 import re
 import select
 import subprocess
 import sys
 import traceback
+from typing import Any
 
 import pygal
-
-__version__ = "2.1.0-dev"
-
-__all__ = (
-    "__version__",
-    "main",
-)
+import pygal.style
 
 ISSUES_REGEX_DEFAULT = re.compile(
     r"(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) *"
-    r"#([0-9]+)"
+    r"#([0-9]+)",
 )
 
 # Pygal style with transparent background and custom colors (dark version)
@@ -126,48 +120,49 @@ PYGAL_STYLES = {
 
 DEFAULT_STYLE = "gitchart_light"
 
+CHARTS = {
+    "authors": "Authors",
+    "tickets_author": "Tickets processed by author",
+    "commits_hour_day": "Commits by hour of day",
+    "commits_hour_week": "Commits by hour of week",
+    "commits_day": "Commits by day",
+    "commits_day_week": "Commits by day of week",
+    "commits_month": "Commits by month of year",
+    "commits_year": "Commits by year",
+    "commits_year_month": "Commits by year/month",
+    "commits_version": "Commits by version",
+    "files_type": "Files by extension",
+}
 
-# pylint: disable=too-few-public-methods,too-many-instance-attributes
+
 class GitChart:
     """Generate a git stat chart."""
 
-    charts = {
-        "authors": "Authors",
-        "tickets_author": "Tickets processed by author",
-        "commits_hour_day": "Commits by hour of day",
-        "commits_hour_week": "Commits by hour of week",
-        "commits_day": "Commits by day",
-        "commits_day_week": "Commits by day of week",
-        "commits_month": "Commits by month of year",
-        "commits_year": "Commits by year",
-        "commits_year_month": "Commits by year/month",
-        "commits_version": "Commits by version",
-        "files_type": "Files by extension",
-    }
-    weekdays = [
-        datetime.date(2001, 1, day).strftime("%a") for day in range(1, 8)
-    ]
-    months = [
-        datetime.date(2001, month, 1).strftime("%b") for month in range(1, 13)
-    ]
+    MAX_DATE = 999999
 
-    # pylint: disable=too-many-arguments, too-many-positional-arguments
-    def __init__(
+    def __init__(  # noqa: PLR0913,PLR0917
         self,
-        chart_name,
-        title=None,
-        repository=".",
-        no_merges=False,
-        output=None,
-        max_diff=20,
-        sort_max=0,
-        issues_regex="",
-        js_files="",
-        style=DEFAULT_STYLE,
-        in_data=None,
-    ):
+        chart_name: str,
+        title: str | None = None,
+        repository: str = ".",
+        no_merges: bool = False,  # noqa: FBT001,FBT002
+        output: str | None = None,
+        max_diff: int = 20,
+        sort_max: int = 0,
+        issues_regex: str = "",
+        js_files: str = "",
+        style: str = DEFAULT_STYLE,
+        in_data: str | None = None,
+    ) -> None:
+        """Initialize gitchart."""
+        self.weekdays = [
+            datetime.date(2001, 1, day).strftime("%a") for day in range(1, 8)
+        ]
+        self.months = [
+            datetime.date(2001, month, 1).strftime("%b") for month in range(1, 13)
+        ]
         self.chart_name = chart_name
-        self.title = title if title is not None else self.charts[chart_name]
+        self.title = title if title is not None else CHARTS[chart_name]
         self.repository = repository
         self.git_log_options = ["--all"]
         if no_merges:
@@ -180,34 +175,32 @@ class GitChart:
         self.style = PYGAL_STYLES[style]
         self.in_data = in_data
 
-    def _git_command(self, command1, command2=None):
-        """
-        Execute one or two piped git commands.
+    def _git_command(self, command1: list[str], command2: list[str] | None = None) -> list[str]:
+        """Execute one or two piped git commands.
 
         Return the output lines as a list.
         """
         if command2:
             # pipe the two commands and return output
-            with subprocess.Popen(
-                command1, stdout=subprocess.PIPE, cwd=self.repository
-            ) as proc1:
-                with subprocess.Popen(
-                    command2,
-                    stdin=proc1.stdout,
-                    stdout=subprocess.PIPE,
-                    cwd=self.repository,
-                ) as proc2:
-                    proc1.stdout.close()
-                    return (
-                        proc2.communicate()[0]
-                        .decode("utf-8", errors="ignore")
-                        .strip()
-                        .split("\n")
-                    )
+            with subprocess.Popen(  # noqa: S603
+                command1, stdout=subprocess.PIPE, cwd=self.repository,
+            ) as proc1, subprocess.Popen(  # noqa: S603
+                command2,
+                stdin=proc1.stdout,
+                stdout=subprocess.PIPE,
+                cwd=self.repository,
+            ) as proc2:
+                proc1.stdout.close()  # ty: ignore[unresolved-attribute]
+                return (
+                    proc2.communicate()[0]
+                    .decode("utf-8", errors="ignore")
+                    .strip()
+                    .split("\n")
+                )
 
         # execute a single git command and return output
-        with subprocess.Popen(
-            command1, stdout=subprocess.PIPE, cwd=self.repository
+        with subprocess.Popen(  # noqa: S603
+            command1, stdout=subprocess.PIPE, cwd=self.repository,
         ) as proc:
             return (
                 proc.communicate()[0]
@@ -216,12 +209,13 @@ class GitChart:
                 .split("\n")
             )
 
-    def _git_command_log(self, arguments, command2=None):
-        """
-        Execute a "git log" command with optional extra arguments and second
-        command.
-        """
-        git_log_cmd = ["git", "log"] + self.git_log_options
+    def _git_command_log(
+        self,
+        arguments: tuple[str] | list[str] | str | None,
+        command2: list[str] | None = None,
+    ) -> list[str]:
+        """Execute a "git log" command with optional extra arguments and second command."""
+        git_log_cmd = ["git", "log", *self.git_log_options]
         if arguments:
             if isinstance(arguments, (tuple, list)):
                 git_log_cmd += arguments
@@ -229,15 +223,14 @@ class GitChart:
                 git_log_cmd += [arguments]
         return self._git_command(git_log_cmd, command2)
 
-    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def _generate_bar_chart(
         self,
-        data,
-        sorted_keys=None,
-        max_keys=0,
-        max_x_labels=0,
-        x_label_rotation=0,
-    ):
+        data: dict[Any, int],
+        sorted_keys: list[Any] | None = None,
+        max_keys: int = 0,
+        max_x_labels: int = 0,
+        x_label_rotation: int = 0,
+    ) -> None:
         """Generate a bar chart."""
         bar_chart = pygal.Bar(
             style=self.style,
@@ -249,14 +242,11 @@ class GitChart:
         bar_chart.title = self.title
         # sort and keep max entries (if asked)
         if self.sort_max != 0:
-            sorted_keys = sorted(
-                data, key=data.get, reverse=self.sort_max < 0
+            sorted_keys = sorted(  # ty: ignore[no-matching-overload]
+                data, key=data.get, reverse=self.sort_max < 0,
             )
             keep = -1 * self.sort_max
-            if keep > 0:
-                sorted_keys = sorted_keys[:keep]
-            else:
-                sorted_keys = sorted_keys[keep:]
+            sorted_keys = sorted_keys[:keep] if keep > 0 else sorted_keys[keep:]
         elif not sorted_keys:
             sorted_keys = sorted(data)
         if max_keys != 0:
@@ -274,11 +264,11 @@ class GitChart:
         bar_chart.add("", [data[k] for k in sorted_keys])
         self._render(bar_chart)
 
-    def _chart_authors(self):
+    def _chart_authors(self) -> bool:
         """Generate pie chart with git authors."""
         # format of lines in stdout:   278  John Doe
         stdout = self._git_command_log(
-            "--pretty=short", ["git", "shortlog", "-sn"]
+            "--pretty=short", ["git", "shortlog", "-sn"],
         )
         pie_chart = pygal.Pie(
             style=self.style,
@@ -303,7 +293,7 @@ class GitChart:
         self._render(pie_chart)
         return True
 
-    def _chart_tickets_author(self):
+    def _chart_tickets_author(self) -> bool:
         """Generate pie chart with processed tickets, by author."""
         # format of lines in stdout: John Doe,refs #1234: fix something
         stdout = self._git_command_log("--pretty=format:%aN,%s")
@@ -327,7 +317,7 @@ class GitChart:
             name: len(tickets) for name, tickets in tickets_author.items()
         }
         for name, number in sorted(
-            tickets_author.items(), key=lambda x: x[1], reverse=True
+            tickets_author.items(), key=lambda x: x[1], reverse=True,
         ):
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
@@ -340,22 +330,22 @@ class GitChart:
         self._render(pie_chart)
         return True
 
-    def _chart_commits_hour_day(self):
+    def _chart_commits_hour_day(self) -> bool:
         """Generate bar chart with commits by hour of day."""
         # format of lines in stdout: 2013-03-15 18:27:55 +0100
         stdout = self._git_command_log(["--date=iso", "--pretty=format:%ad"])
-        commits = {f"{hour:02d}": 0 for hour in range(0, 24)}
+        commits = {f"{hour:02d}": 0 for hour in range(24)}
         for line in stdout:
             commits[line.split()[1].split(":")[0]] += 1
         self._generate_bar_chart(commits)
         return True
 
-    def _chart_commits_hour_week(self):
+    def _chart_commits_hour_week(self) -> bool:
         """Generate dot chart with commits by hour of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
         stdout = self._git_command_log(["--date=rfc", "--pretty=format:%ad"])
         commits = {
-            day: {f"{hour:02d}": 0 for hour in range(0, 24)}
+            day: {f"{hour:02d}": 0 for hour in range(24)}
             for day in self.weekdays
         }
         for line in stdout:
@@ -363,58 +353,58 @@ class GitChart:
             commits[wday[:-1]][hour.split(":")[0]] += 1
         dot_chart = pygal.Dot(style=self.style, js=self.javascript)
         dot_chart.title = self.title
-        dot_chart.x_labels = [f"{hh:02d}" for hh in range(0, 24)]
+        dot_chart.x_labels = [f"{hh:02d}" for hh in range(24)]
         for day in self.weekdays:
             dot_chart.add(day, commits[day])
         self._render(dot_chart)
         return True
 
-    def _chart_commits_day(self):
+    def _chart_commits_day(self) -> bool:
         """Generate bar chart with commits by day."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command_log(
-            ["--date=short", "--pretty=format:%ad"]
+            ["--date=short", "--pretty=format:%ad"],
         )
         commits = {}
         for line in stdout:
             commits[line] = commits.get(line, 0) + 1
         self._generate_bar_chart(
-            commits, max_keys=self.max_diff, x_label_rotation=45
+            commits, max_keys=self.max_diff, x_label_rotation=45,
         )
         return True
 
-    def _chart_commits_day_week(self):
+    def _chart_commits_day_week(self) -> bool:
         """Generate bar chart with commits by day of week."""
         # format of lines in stdout: Fri, 15 Mar 2013 18:27:55 +0100
         stdout = self._git_command_log(["--date=rfc", "--pretty=format:%ad"])
-        commits = {day: 0 for day in self.weekdays}
+        commits = dict.fromkeys(self.weekdays, 0)
         for line in stdout:
             commits[line.split(",")[0]] += 1
         self._generate_bar_chart(
-            commits, sorted_keys=sorted(commits, key=self.weekdays.index)
+            commits, sorted_keys=sorted(commits, key=self.weekdays.index),
         )
         return True
 
-    def _chart_commits_month(self):
+    def _chart_commits_month(self) -> bool:
         """Generate bar chart with commits by month of year."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command_log(
-            ["--date=short", "--pretty=format:%ad"]
+            ["--date=short", "--pretty=format:%ad"],
         )
-        commits = {month: 0 for month in self.months}
+        commits = dict.fromkeys(self.months, 0)
         for line in stdout:
             month = int(line.split("-")[1]) - 1
             commits[self.months[month]] += 1
         self._generate_bar_chart(
-            commits, sorted_keys=sorted(commits, key=self.months.index)
+            commits, sorted_keys=sorted(commits, key=self.months.index),
         )
         return True
 
-    def _chart_commits_year(self):
+    def _chart_commits_year(self) -> bool:
         """Generate bar chart with commits by year."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command_log(
-            ["--date=short", "--pretty=format:%ad"]
+            ["--date=short", "--pretty=format:%ad"],
         )
         commits = {}
         for line in stdout:
@@ -423,14 +413,14 @@ class GitChart:
         self._generate_bar_chart(commits)
         return True
 
-    def _chart_commits_year_month(self):
+    def _chart_commits_year_month(self) -> bool:
         """Generate bar chart with commits by year/month."""
         # format of lines in stdout: 2013-03-15
         stdout = self._git_command_log(
-            ["--date=short", "--pretty=format:%ad"]
+            ["--date=short", "--pretty=format:%ad"],
         )
         commits = {}
-        min_date = 999999
+        min_date = self.MAX_DATE
         max_date = 0
         for line in stdout:
             year, month = line.split("-")[0:2]
@@ -439,22 +429,22 @@ class GitChart:
             max_date = max(max_date, date)
             year_month = f"{year}-{month}"
             commits[year_month] = commits.get(year_month, 0) + 1
-        if min_date != 999999:
+        if min_date != self.MAX_DATE:
             date = min_date
             while date < max_date:
                 year_month = f"{date // 100:04d}-{date % 100:02d}"
                 commits[year_month] = commits.get(year_month, 0)
-                if date % 100 == 12:
+                if date % 100 == 12:  # noqa: PLR2004
                     # next year, for example: 201312 => 201401 (+89)
                     date += 89
                 else:
                     date += 1
         self._generate_bar_chart(
-            commits, max_x_labels=30, x_label_rotation=45
+            commits, max_x_labels=30, x_label_rotation=45,
         )
         return True
 
-    def _chart_commits_version(self):
+    def _chart_commits_version(self) -> bool:
         """Generate bar chart with commits by version (tag)."""
         if not self.in_data:
             return False
@@ -473,18 +463,18 @@ class GitChart:
                         "log",
                         oldtag + ".." + tag if oldtag else tag,
                         "--pretty=oneline",
-                    ]
-                )
+                    ],
+                ),
             )
             oldtag = tag
         self._generate_bar_chart(commits, x_label_rotation=90)
         return True
 
-    def _chart_files_type(self):
+    def _chart_files_type(self) -> bool:
         """Generate pie chart with files by extension."""
         # format of lines in stdout: path/to/file.c
         stdout = self._git_command(
-            ["git", "ls-tree", "-r", "--name-only", "HEAD"]
+            ["git", "ls-tree", "-r", "--name-only", "HEAD"],
         )
         extensions = {}
         for line in stdout:
@@ -502,7 +492,7 @@ class GitChart:
         count = 0
         count_others = 0
         sum_others = 0
-        for ext in sorted(extensions, key=extensions.get, reverse=True):
+        for ext in sorted(extensions, key=extensions.get, reverse=True):  # ty: ignore[no-matching-overload]
             count += 1
             if self.max_diff <= 0 or count <= self.max_diff:
                 pie_chart.add(ext + f" ({extensions[ext]})", extensions[ext])
@@ -514,30 +504,30 @@ class GitChart:
         self._render(pie_chart)
         return True
 
-    def _render(self, chart):
+    def _render(self, chart: pygal.Graph) -> None:
         """Render the chart in a file (or stdout)."""
         if self.output == "-":
             # display SVG on stdout
             print(chart.render())
-        elif self.output.lower().endswith(".png"):
+        elif self.output.lower().endswith(".png"):  # ty: ignore[unresolved-attribute]
             # write PNG in file
             chart.render_to_png(self.output)
         else:
             # write SVG in file
             chart.render_to_file(self.output)
 
-    def generate(self):
+    def generate(self) -> bool:
         """Generate a chart, and return True if OK, False if error."""
         try:
             # call method to build chart (name of method is dynamic)
             return getattr(self, "_chart_" + self.chart_name)()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:  # noqa: BLE001
             traceback.print_exc()
             return False
 
 
-def main():
-    """Main function, entry point."""
+def gitchart() -> None:
+    """Generate statistic charts on Git repository."""
     # parse command line arguments
     pygal_config = pygal.Config()
     parser = argparse.ArgumentParser(
@@ -600,7 +590,7 @@ def main():
     parser.add_argument(
         "-j",
         "--js",
-        default=",".join(pygal_config.js),
+        default=",".join(pygal_config.js),  # ty: ignore[no-matching-overload]
         help="comma-separated list of javascript files/links used in SVG",
     )
     styles = ", ".join(PYGAL_STYLES.keys())
@@ -611,11 +601,11 @@ def main():
         choices=PYGAL_STYLES.keys(),
         help=f"Pygal style to use, one of: {styles}",
     )
-    charts = ", ".join(sorted(GitChart.charts))
+    charts = ", ".join(sorted(CHARTS))
     parser.add_argument(
         "chart",
         metavar="chart",
-        choices=sorted(GitChart.charts),
+        choices=sorted(CHARTS),
         help=f"name of chart, one of: {charts}",
     )
     parser.add_argument(
@@ -625,8 +615,9 @@ def main():
             "content on standard output"
         ),
     )
+    version = importlib.metadata.version("gitchart")
     parser.add_argument(
-        "-v", "--version", action="version", version=__version__
+        "-v", "--version", action="version", version=version,
     )
     if len(sys.argv) == 1:
         parser.print_help()
@@ -668,7 +659,3 @@ def main():
     # error
     print("ERROR: failed to generate chart:", vars(args))
     sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()

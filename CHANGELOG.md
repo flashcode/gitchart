@@ -6,6 +6,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Use uv, ruff and ty
+
 ## [2.0.2] - 2021-11-24
 
 ### Fixed
@@ -148,6 +154,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 - First release
 
+[Unreleased]: https://github.com/flashcode/gitchart/compare/v2.0.2...HEAD
 [2.0.2]: https://github.com/flashcode/gitchart/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/flashcode/gitchart/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/flashcode/gitchart/compare/v1.5...v2.0.0

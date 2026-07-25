@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2026 Sébastien Helleu <flashcode@flashtux.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[project]
+name = "gitchart"
+version = "2.1.0-dev"
+description = "Generate statistic charts on Git repositories"
+readme = "README.md"
+authors = [
+    { name = "Sébastien Helleu", email = "flashcode@flashtux.org" }
+]
+license = "GPL-3.0-or-later"
+keywords = ["git", "charts", "statistics"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Version Control",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pygal",
+]
+
+[project.optional-dependencies]
+svg = [
+    "cairosvg",
+]
+
+[project.scripts]
+gitchart = "gitchart:main"
+
+[project.urls]
+Repository = "https://github.com/flashcode/gitchart"
+Issues = "https://github.com/flashcode/gitchart/issues"
+Changelog = "https://github.com/flashcode/gitchart/blob/main/CHANGELOG.md"
+
+[build-system]
+requires = ["uv_build>=0.11.32"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "PTH122", # os-path-splitext
+    "SIM113", # enumerate-for-loop
+    "T201", # print
+]
+flake8-copyright.notice-rgx = "(?i)# SPDX-FileCopyrightText:\\s\\d{4}(-(\\d{4}|present))*"

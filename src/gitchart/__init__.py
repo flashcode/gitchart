@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 #
 # SPDX-FileCopyrightText: 2013-2026 Sébastien Helleu <flashcode@flashtux.org>
 #
@@ -22,4 +21,9 @@
 
 """Generate statistic charts on Git repositories."""
 
-from gitchart.gitchart import *  # noqa
+from gitchart.gitchart import gitchart
+
+
+def main() -> None:
+    """Run gitchart."""
+    gitchart()
