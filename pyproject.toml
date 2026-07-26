@@ -41,9 +41,19 @@ Repository = "https://github.com/flashcode/gitchart"
 Issues = "https://github.com/flashcode/gitchart/issues"
 Changelog = "https://github.com/flashcode/gitchart/blob/main/CHANGELOG.md"
 
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+]
+
 [build-system]
 requires = ["uv_build>=0.11.32"]
 build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-config", "--strict-markers"]
 
 [tool.ruff]
 line-length = 120
@@ -57,3 +67,10 @@ ignore = [
     "T201", # print
 ]
 flake8-copyright.notice-rgx = "(?i)# SPDX-FileCopyrightText:\\s\\d{4}(-(\\d{4}|present))*"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "PLR2004", # magic-value-comparison
+    "S101", # assert
+    "SLF001", # private-member-access
+]

@@ -8,6 +8,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## [Unreleased]
 
+### Added
+
+- Add unit tests
+
 ### Changed
 
 - Use uv, ruff and ty

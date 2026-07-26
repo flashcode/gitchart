@@ -60,6 +60,15 @@ cd /path/to/gitrepo/
 git tag | uvx gitchart commits_version /tmp/commits_version.svg
 ```
 
+## Tests
+
+The tests are run with [pytest](https://docs.pytest.org/), on a temporary git
+repository built with deterministic commits, authors, dates and tags:
+
+```bash
+make test
+```
+
 ## Demo
 
 <!-- REUSE-IgnoreStart -->

@@ -4,6 +4,7 @@
 
 *.pyc
 *.pyo
+.coverage
 build/
 dist/
 gitchart.egg-info/
