@@ -34,7 +34,7 @@ svg = [
 ]
 
 [project.scripts]
-gitchart = "gitchart:main"
+gitchart = "gitchart.cli:main"
 
 [project.urls]
 Repository = "https://github.com/flashcode/gitchart"

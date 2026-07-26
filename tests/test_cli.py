@@ -22,28 +22,14 @@
 """Tests on the command line interface."""
 
 import importlib.metadata
-import sys
 from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 
-import gitchart
 from tests.conftest import TAGS
 
 ARGPARSE_ERROR = 2
-
-
-def test_main(
-    monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    """Test the entry point of the package."""
-    monkeypatch.setattr(sys, "argv", ["gitchart"])
-    with pytest.raises(SystemExit) as exc_info:
-        gitchart.main()
-    assert exc_info.value.code == 1
-    assert capsys.readouterr().out.startswith("usage: gitchart")
 
 
 def test_no_arguments(

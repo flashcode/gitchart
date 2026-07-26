@@ -31,7 +31,8 @@ from typing import IO, Any, NamedTuple
 import pygal
 import pytest
 
-from gitchart.gitchart import GitChart, gitchart
+from gitchart.cli import main
+from gitchart.gitchart import GitChart
 
 
 class Commit(NamedTuple):
@@ -219,7 +220,7 @@ def run_gitchart(
         streams.append(stream)
         monkeypatch.setattr(sys, "stdin", stream)
         with pytest.raises(SystemExit) as exc_info:
-            gitchart()
+            main()
         return exc_info.value.code
 
     yield _run_gitchart

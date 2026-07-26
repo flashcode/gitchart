@@ -20,10 +20,3 @@
 #
 
 """Generate statistic charts on Git repositories."""
-
-from gitchart.gitchart import gitchart
-
-
-def main() -> None:
-    """Run gitchart."""
-    gitchart()
