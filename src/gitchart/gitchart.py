@@ -21,7 +21,7 @@ Charts supported:
    files_type         | pie   | files by type (extension)   | -
 """
 
-import datetime
+import datetime as dt
 import os
 import re
 import subprocess
@@ -136,10 +136,10 @@ class GitChart:
     ) -> None:
         """Initialize gitchart."""
         self.weekdays = [
-            datetime.date(2001, 1, day).strftime("%a") for day in range(1, 8)
+            dt.date(2001, 1, day).strftime("%a") for day in range(1, 8)
         ]
         self.months = [
-            datetime.date(2001, month, 1).strftime("%b") for month in range(1, 13)
+            dt.date(2001, month, 1).strftime("%b") for month in range(1, 13)
         ]
         self.chart_name = chart_name
         self.title = title if title is not None else CHARTS[chart_name]
