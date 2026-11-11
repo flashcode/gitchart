@@ -115,6 +115,21 @@ CHARTS = {
 }
 
 
+def sort_versions(versions: list[str]) -> list[str]:
+    """Sort a list of versions (digits with period as separator).
+
+    Each version is compared numerically component by component, for example:
+    "4.9.0" < "4.10.0".
+
+    :param versions: list of versions
+    :return: sorted list of versions
+    """
+    return sorted(
+        versions,
+        key=lambda version: [int(number) for number in version.split(".") if number],
+    )
+
+
 class GitChart:
     """Generate a git stat chart."""
 
@@ -428,15 +443,20 @@ class GitChart:
         """Generate bar chart with commits by version (tag)."""
         if not self.in_data:
             return False
+        # transform version to keep only digits with period as separator,
+        # examples:
+        #   release-0-0-1  =>  0.0.1
+        #   v0.3.0         =>  0.3.0
+        tags = {
+            re.sub("([^0-9]+)", " ", tag).strip().replace(" ", "."): tag
+            for tag in self.in_data.strip().split("\n")
+        }
+        sorted_versions = sort_versions(list(tags))
         commits = {}
         oldtag = ""
-        for tag in self.in_data.strip().split("\n"):
-            # transform version to keep only digits with period as separator,
-            # examples:
-            #   release-0-0-1  =>  0.0.1
-            #   v0.3.0         =>  0.3.0
-            tag2 = re.sub("([^0-9]+)", " ", tag).strip().replace(" ", ".")
-            commits[tag2] = len(
+        for version in sorted_versions:
+            tag = tags[version]
+            commits[version] = len(
                 self._git_command(
                     [
                         "git",
@@ -447,7 +467,11 @@ class GitChart:
                 ),
             )
             oldtag = tag
-        self._generate_bar_chart(commits, x_label_rotation=90)
+        self._generate_bar_chart(
+            commits,
+            sorted_keys=sorted_versions,
+            x_label_rotation=90,
+        )
         return True
 
     def _chart_files_type(self) -> bool:

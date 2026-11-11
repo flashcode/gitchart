@@ -302,6 +302,17 @@ def test_chart_commits_version_other_tag_names(
     ]
 
 
+def test_chart_commits_version_sorted(
+    rendered: list[pygal.Graph],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the sort of versions in the bar chart with commits by version."""
+    chart = GitChart("commits_version", output="-", in_data="v4.9.0\nv4.10.0\nv4.8.0\n")
+    monkeypatch.setattr(chart, "_git_command", FakeGit("commit 1"))
+    assert chart.generate() is True
+    assert list(rendered[0].x_labels) == ["4.8.0", "4.9.0", "4.10.0"]
+
+
 def test_chart_commits_version_without_data(
     make_chart: Callable[..., GitChart],
     rendered: list[pygal.Graph],

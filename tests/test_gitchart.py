@@ -33,6 +33,7 @@ from gitchart.gitchart import (
     GITCHART_LIGHT_STYLE,
     PYGAL_STYLES,
     GitChart,
+    sort_versions,
 )
 from tests.helpers import FakeChart, FakeGit, bar_data, bar_values
 
@@ -41,6 +42,22 @@ MONTHS = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ]
+
+
+# ------------------------------------------------------------- sort_versions
+
+
+def test_sort_versions() -> None:
+    """Test sort of versions."""
+    assert sort_versions([]) == []
+    assert sort_versions(["4.10.0", "4.9.0", "10.0", "4.9", "", "0.1"]) == [
+        "",
+        "0.1",
+        "4.9",
+        "4.9.0",
+        "4.10.0",
+        "10.0",
+    ]
 
 
 # ---------------------------------------------------------------- constructor

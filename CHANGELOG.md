@@ -16,6 +16,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 - Use uv, ruff and ty
 
+### Fixed
+
+- Sort versions numerically in chart "commits_version" (eg: "4.9.0" < "4.10.0")
+
 ## [2.0.2] - 2021-11-24
 
 ### Fixed
