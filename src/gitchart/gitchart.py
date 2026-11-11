@@ -185,7 +185,7 @@ class GitChart:
                 stdout=subprocess.PIPE,
                 cwd=self.repository,
             ) as proc2:
-                proc1.stdout.close()  # ty: ignore[unresolved-attribute]
+                proc1.stdout.close()  # ty: ignore[missing-union-attribute]
                 return (
                     proc2.communicate()[0]
                     .decode("utf-8", errors="ignore")
@@ -513,7 +513,7 @@ class GitChart:
         if self.output == "-":
             # display SVG on stdout
             print(chart.render())
-        elif self.output.lower().endswith(".png"):  # ty: ignore[unresolved-attribute]
+        elif self.output.lower().endswith(".png"):  # ty: ignore[missing-union-attribute]
             # write PNG in file
             chart.render_to_png(self.output)
         else:
